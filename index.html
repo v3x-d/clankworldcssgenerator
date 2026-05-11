@@ -8,12 +8,18 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
-  <!-- Main CSS -->
+  <!-- Styles -->
   <link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script>
-  <script src="generator.js"></script>
+
+  <!-- Dev console (mobile debugging) -->
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>
+    if (location.search.includes("debug")) {
+      eruda.init();
+    }
+  </script>
 </head>
+
 <body>
 
 <!-- =========================================================
@@ -21,7 +27,7 @@
 ========================================================= -->
 <div class="app">
 
-  <!-- LEFT SIDEBAR / CONTROLS -->
+  <!-- LEFT SIDEBAR -->
   <aside class="sidebar">
 
     <div class="panel">
@@ -37,7 +43,7 @@
       <button onclick="addSection('chart')">Charts</button>
       <button onclick="addSection('footer')">Footer</button>
 
-      <hr/>
+      <hr />
 
       <button onclick="resetLayout()">Reset</button>
       <button onclick="savePreset()">Save Preset</button>
@@ -72,9 +78,7 @@
 
   <!-- CENTER CANVAS -->
   <main class="canvas-wrapper">
-
     <div id="preview-canvas" class="preview-canvas"></div>
-
   </main>
 
   <!-- RIGHT PANEL -->
@@ -88,9 +92,9 @@
     <div class="panel">
       <h3>OUTPUT</h3>
 
-      <button id="copy-html-btn" onclick="copyCode('html')">Copy HTML</button>
-      <button id="copy-css-btn" onclick="copyCode('css')">Copy CSS</button>
-      <button id="copy-full-btn" onclick="copyCode('full')">Copy FULL</button>
+      <button onclick="copyCode('html')">Copy HTML</button>
+      <button onclick="copyCode('css')">Copy CSS</button>
+      <button onclick="copyCode('full')">Copy FULL</button>
 
       <pre id="rcode-html"></pre>
       <pre id="rcode-css"></pre>
@@ -100,13 +104,28 @@
   </aside>
 
 </div>
-<script src="app.js"></script>
+
 <!-- =========================================================
-  CORE SCRIPT (your engine)
+  SCRIPTS (ORDER MATTERS)
 ========================================================= -->
+
+<!-- 1. CORE DATA + GENERATOR -->
+<script src="generator.js"></script>
+
+<!-- 2. APP LOGIC (UI + state + handlers) -->
 <script src="app.js"></script>
+
+<!-- 3. BOOTSTRAP (safe init, no duplicates) -->
 <script>
-  window.addEventListener("DOMContentLoaded", () => {
+(() => {
+  let booted = false;
+
+  function initEngine() {
+    if (booted) return;
+    booted = true;
+
+    console.log("Clank Engine booting...");
+
     if (typeof loadTemplate === "function") {
       loadTemplate("landing");
     }
@@ -119,8 +138,16 @@
       generateCode();
     }
 
-    console.log("Engine booted");
-  });
+    console.log("Clank Engine ready");
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initEngine);
+  } else {
+    initEngine();
+  }
+})();
 </script>
+
 </body>
 </html>
