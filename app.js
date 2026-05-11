@@ -70,12 +70,13 @@ function addSection(type) {
   sections.push({ id, type });
 
   const canvas = document.getElementById("preview-canvas");
-  if (!canvas) return;
 
-  const wrapper = document.createElement("div");
-  wrapper.innerHTML = safeRenderSection(type, id);
+  const el = document.createElement("div");
+  el.className = `preview-section ${type}`;
+  el.id = `sec-${id}`;
+  el.dataset.type = type;
 
-  const el = wrapper.firstChild;
+  el.innerHTML = generateSectionInnerHTML(type, id);
 
   canvas.appendChild(el);
 
