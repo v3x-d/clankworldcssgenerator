@@ -1,118 +1,146 @@
 // ============================================================
-// CLANK.WORLD GENERATOR ENGINE
+// CLANK.WORLD GENERATOR ENGINE v2 (ROBUST)
 // generator.js
 // ============================================================
 
-// ------------------------------------------------------------
-// MAIN ENTRY
-// ------------------------------------------------------------
-function generateCode() {
-  const html = buildHTML();
-  const css = buildCSS();
-  const full = buildFullOutput(html, css);
+(function () {
+  // -----------------------------
+  // SAFE GLOBAL HOOKS
+  // -----------------------------
+  const safe = {
+    getCanvas: () => document.getElementById("preview-canvas"),
+    get: (id) => document.getElementById(id),
+    val: (id) => {
+      const el = document.getElementById(id);
+      return el ? el.value : "";
+    }
+  };
 
-  pushToOutputs(html, css, full);
-}
+  // -----------------------------
+  // MAIN ENTRY
+  // -----------------------------
+  window.generateCode = function generateCode() {
+    try {
+      const html = buildHTML();
+      const css = buildCSS();
+      const full = buildFull(html, css);
 
-// ------------------------------------------------------------
-// HTML BUILDER
-// ------------------------------------------------------------
-function buildHTML() {
-  const canvas = document.getElementById("preview-canvas");
-  if (!canvas) return "";
+      pushOutputs(html, css, full);
+    } catch (err) {
+      console.error("generateCode error:", err);
+    }
+  };
 
-  let out = "";
+  // -----------------------------
+  // HTML BUILDER (SAFE)
+  // -----------------------------
+  function buildHTML() {
+    const canvas = safe.getCanvas();
+    if (!canvas) return fallbackHTML();
 
-  canvas.querySelectorAll(".preview-section").forEach(sec => {
-    const clone = sec.cloneNode(true);
+    const sections = canvas.querySelectorAll(".preview-section");
+    let out = "";
 
-    // remove builder UI artifacts
-    clone.querySelectorAll(".section-overlay, .drag-handle")
-      .forEach(el => el.remove());
+    if (!sections.length) {
+      return fallbackHTML();
+    }
 
-    clone.querySelectorAll("[contenteditable]")
-      .forEach(el => el.removeAttribute("contenteditable"));
+    sections.forEach((sec) => {
+      out += serializeSection(sec);
+    });
 
-    clone.removeAttribute("id");
-    clone.classList.remove("selected");
+    return out;
+  }
 
-    out += clone.outerHTML + "\n";
-  });
+  // -----------------------------
+  // SECTION SERIALIZER
+  // -----------------------------
+  function serializeSection(sec) {
+    try {
+      const clone = sec.cloneNode(true);
 
-  return out;
-}
+      // remove builder artifacts safely
+      clone.querySelectorAll(".section-overlay, .drag-handle")
+        .forEach(el => el.remove());
 
-// ------------------------------------------------------------
-// CSS BUILDER
-// ------------------------------------------------------------
-function buildCSS() {
-  const bg = val("bgColor");
-  const accent = val("colAccent");
-  const secondary = val("colSecondary");
-  const text = val("colTextPrimary");
-  const muted = val("colTextMuted");
-  const card = val("colCard");
-  const border = val("colBorder");
+      clone.querySelectorAll("[contenteditable]")
+        .forEach(el => el.removeAttribute("contenteditable"));
 
-  return `
+      clone.removeAttribute("id");
+      clone.classList.remove("selected");
+
+      return clone.outerHTML + "\n";
+    } catch (e) {
+      console.warn("section serialize failed:", e);
+      return "";
+    }
+  }
+
+  // -----------------------------
+  // FALLBACK UI (IMPORTANT)
+  // -----------------------------
+  function fallbackHTML() {
+    return `
+<section class="ps-card" style="margin:20px;padding:20px">
+  <h2 style="font-family:Orbitron">NO SECTIONS FOUND</h2>
+  <p style="opacity:0.7">
+    Builder engine is running but no .preview-section elements exist.
+    Check app.js section creation.
+  </p>
+</section>
+`;
+  }
+
+  // -----------------------------
+  // CSS BUILDER (STABLE CORE)
+  // -----------------------------
+  function buildCSS() {
+    const bg = safe.val("bgColor");
+    const accent = safe.val("colAccent");
+    const secondary = safe.val("colSecondary");
+    const text = safe.val("colTextPrimary");
+    const muted = safe.val("colTextMuted");
+    const card = safe.val("colCard");
+    const border = safe.val("colBorder");
+
+    return `
 <style>
 :root{
-  --bg:${bg};
-  --accent:${accent};
-  --secondary:${secondary};
-  --text-primary:${text};
-  --text-muted:${muted};
-  --card-bg:${card};
-  --border:${border};
+  --bg:${bg || "#050710"};
+  --accent:${accent || "#00f5ff"};
+  --secondary:${secondary || "#b400ff"};
+  --text-primary:${text || "#e8eeff"};
+  --text-muted:${muted || "#8890bb"};
+  --card-bg:${card || "#111428"};
+  --border:${border || "#1a1f3a"};
 }
 
 body{
+  margin:0;
   background:var(--bg);
   color:var(--text-primary);
-  font-family:Inter, sans-serif;
+  font-family:Exo 2, sans-serif;
 }
 
-/* ========================= */
-/* CORE ANIMATIONS */
-/* ========================= */
-@keyframes float {0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes pulse {0%,100%{opacity:1}50%{opacity:.6}}
-@keyframes shimmer {0%{background-position:-200%}100%{background-position:200%}}
-@keyframes fade-in {from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+/* CORE LAYOUT SAFETY */
+.preview-section{
+  margin:12px;
+}
 
-/* ========================= */
 /* CARDS */
-/* ========================= */
 .ps-card{
   background:var(--card-bg);
   border:1px solid var(--border);
   border-radius:12px;
-  padding:20px;
-  transition:.3s;
+  padding:18px;
 }
 
-.ps-card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 10px 30px rgba(0,0,0,.3);
-}
-
-/* ========================= */
-/* HERO */
-/* ========================= */
-.ps-hero-title{
-  font-size:clamp(28px,5vw,56px);
-  font-weight:800;
-  color:var(--text-primary);
-}
-
-/* ========================= */
 /* BUTTONS */
-/* ========================= */
 .ps-btn{
-  padding:10px 18px;
+  padding:10px 14px;
   border-radius:6px;
-  cursor:pointer;
   border:none;
+  cursor:pointer;
 }
 
 .ps-btn-primary{
@@ -120,29 +148,27 @@ body{
   color:#000;
 }
 
-/* ========================= */
 /* GRID */
-/* ========================= */
 .ps-card-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:16px;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:14px;
 }
 
 </style>
 `;
-}
+  }
 
-// ------------------------------------------------------------
-// FULL OUTPUT COMBINER
-// ------------------------------------------------------------
-function buildFullOutput(html, css) {
-  return `
+  // -----------------------------
+  // FULL OUTPUT
+  // -----------------------------
+  function buildFull(html, css) {
+    return `
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 ${css}
 </head>
 <body>
@@ -152,26 +178,23 @@ ${html}
 </body>
 </html>
 `;
-}
+  }
 
-// ------------------------------------------------------------
-// OUTPUT INJECTION (UI)
-// ------------------------------------------------------------
-function pushToOutputs(html, css, full) {
-  setText("rcode-html", html);
-  setText("rcode-css", css);
-  setText("rcode-full", full);
-}
+  // -----------------------------
+  // OUTPUT PIPE
+  // -----------------------------
+  function pushOutputs(html, css, full) {
+    setText("rcode-html", html);
+    setText("rcode-css", css);
+    setText("rcode-full", full);
+  }
 
-// ------------------------------------------------------------
-// HELPERS
-// ------------------------------------------------------------
-function val(id) {
-  const el = document.getElementById(id);
-  return el ? el.value : "";
-}
+  // -----------------------------
+  // UTIL
+  // -----------------------------
+  function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
 
-function setText(id, value) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = value;
-}
+})();
