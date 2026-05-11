@@ -260,3 +260,62 @@ window.cloneSection = cloneSection;
 window.selectSection = selectSection;
 window.updateSectionTree = updateSectionTree;
 window.applyAnims = applyAnims;
+
+// ============================================================
+// GLOBAL UI API (FIXES ALL BUTTON ERRORS)
+// ============================================================
+
+window.copyCode = function(type) {
+  const html = document.getElementById("rcode-html")?.textContent || "";
+  const css = document.getElementById("rcode-css")?.textContent || "";
+  const full = document.getElementById("rcode-full")?.textContent || "";
+
+  const map = { html, css, full };
+
+  navigator.clipboard.writeText(map[type] || "")
+    .then(() => console.log("copied:", type))
+    .catch(console.warn);
+};
+
+window.setPreviewSize = function(size, el) {
+  const canvas = document.getElementById("preview-canvas");
+  if (!canvas) return;
+
+  const sizes = {
+    desktop: "100%",
+    tablet: "768px",
+    mobile: "375px"
+  };
+
+  canvas.style.width = sizes[size] || "100%";
+
+  document.querySelectorAll(".sidebar button")
+    .forEach(b => b.classList.remove("active"));
+
+  el?.classList.add("active");
+};
+
+window.zoom = function(delta) {
+  const canvas = document.getElementById("preview-canvas");
+  if (!canvas) return;
+
+  let z = parseFloat(canvas.dataset.zoom || "1");
+  z = Math.max(0.5, Math.min(1.5, z + delta));
+
+  canvas.dataset.zoom = z;
+  canvas.style.transform = `scale(${z})`;
+
+  const label = document.getElementById("zoom-label");
+  if (label) label.textContent = Math.round(z * 100) + "%";
+};
+
+window.resetLayout = function() {
+  const canvas = document.getElementById("preview-canvas");
+  if (canvas) canvas.innerHTML = "";
+
+  if (typeof window.loadTemplate === "function") {
+    window.loadTemplate("landing");
+  }
+
+  console.log("layout reset");
+};
