@@ -1,11 +1,6 @@
 // ============================================================
-// CLANK.WORLD BUILDER ENGINE v3 (STABLE CORE)
-// app.js
-// ============================================================
-
-// -----------------------------
 // STATE
-// -----------------------------
+// ============================================================
 let sections = [];
 let sectionCounter = 0;
 
@@ -20,15 +15,27 @@ let toggleState = {
 
 let undoStack = [];
 
-// -----------------------------
+// ============================================================
 // INIT
-// -----------------------------
+// ============================================================
 document.addEventListener("DOMContentLoaded", initBuilder);
 
 function initBuilder() {
   console.log("Clank Engine booting...");
 
-  function safeLoadTemplate(name) {
+  bootTemplate("landing");
+
+  setTimeout(() => {
+    requestRender();
+  }, 50);
+
+  console.log("Clank Engine ready");
+}
+
+// ============================================================
+// SAFE TEMPLATE BOOT (REAL ENTRY POINT)
+// ============================================================
+function bootTemplate(name) {
   sections = [];
   sectionCounter = 0;
 
@@ -37,22 +44,15 @@ function initBuilder() {
 
   const defaults = ["navbar", "hero", "cards", "stats", "footer"];
 
-  defaults.forEach(type => addSection(type));
+  defaults.forEach(t => addSection(t));
 
   updateSectionTree();
   requestRender();
 }
-  // IMPORTANT: defer render so DOM exists
-  setTimeout(() => {
-    requestRender();
-  }, 50);
 
-  console.log("Clank Engine ready");
-}
-
-// -----------------------------
+// ============================================================
 // UTIL
-// -----------------------------
+// ============================================================
 function showToast(msg) {
   console.log("[Toast]", msg);
 }
@@ -62,35 +62,9 @@ function pushUndo() {
   if (undoStack.length > 30) undoStack.shift();
 }
 
-// -----------------------------
-// SAFE SECTION RENDER
-// -----------------------------
-function renderSection(type, id) {
-  if (typeof window.generateSectionHTML === "function") {
-    return generateSectionHTML(type, id);
-  }
-
-  // SAFE FALLBACK (never breaks UI)
-  return `
-    <div class="preview-section" id="sec-${id}" data-type="${type}">
-      <div class="section-overlay"></div>
-      <div style="
-        padding:16px;
-        border:1px solid #333;
-        border-radius:8px;
-        margin:10px;
-        color:#aaa;
-        font-family:monospace;
-      ">
-        Missing generator for: <b>${type}</b>
-      </div>
-    </div>
-  `;
-}
-
-// -----------------------------
-// SECTION MANAGEMENT
-// -----------------------------
+// ============================================================
+// SECTION SYSTEM
+// ============================================================
 function addSection(type) {
   const id = ++sectionCounter;
   sections.push({ id, type });
@@ -104,13 +78,7 @@ function addSection(type) {
   el.dataset.type = type;
 
   el.innerHTML = `
-    <div style="
-      padding:20px;
-      margin:10px;
-      border:1px solid #444;
-      color:white;
-      border-radius:8px;
-    ">
+    <div style="padding:18px;margin:10px;border:1px solid #444;color:#fff;border-radius:8px">
       SECTION: ${type}
     </div>
   `;
@@ -118,6 +86,8 @@ function addSection(type) {
   canvas.appendChild(el);
 
   updateSectionTree();
+  requestRender();
+
   console.log("SECTION ADDED:", type);
 }
 
@@ -139,9 +109,7 @@ function moveSection(sid, dir) {
 
   if (dir === -1 && el.previousElementSibling) {
     el.parentNode.insertBefore(el, el.previousElementSibling);
-  }
-
-  if (dir === 1 && el.nextElementSibling) {
+  } else if (dir === 1 && el.nextElementSibling) {
     el.parentNode.insertBefore(el.nextElementSibling, el);
   }
 
@@ -170,9 +138,9 @@ function cloneSection(sid) {
   requestRender();
 }
 
-// -----------------------------
+// ============================================================
 // SELECTION
-// -----------------------------
+// ============================================================
 function selectSection(sid) {
   document.querySelectorAll(".preview-section")
     .forEach(s => s.classList.remove("selected"));
@@ -180,9 +148,9 @@ function selectSection(sid) {
   document.getElementById(sid)?.classList.add("selected");
 }
 
-// -----------------------------
+// ============================================================
 // SECTION TREE
-// -----------------------------
+// ============================================================
 function updateSectionTree() {
   const tree = document.getElementById("section-tree");
   if (!tree) return;
@@ -196,12 +164,11 @@ function updateSectionTree() {
     div.className = "tree-item";
 
     div.innerHTML = `
-      <div class="ti-dot"></div>
-      ${String(i + 1).padStart(2, "0")} ${type.toUpperCase()}
-      <div class="ti-actions">
-        <div onclick="moveSection('${sec.id}',-1)">↑</div>
-        <div onclick="moveSection('${sec.id}',1)">↓</div>
-        <div onclick="deleteSection('${sec.id}')">✕</div>
+      <div>${String(i + 1).padStart(2, "0")} ${type}</div>
+      <div>
+        <button onclick="moveSection('${sec.id}',-1)">↑</button>
+        <button onclick="moveSection('${sec.id}',1)">↓</button>
+        <button onclick="deleteSection('${sec.id}')">✕</button>
       </div>
     `;
 
@@ -211,16 +178,12 @@ function updateSectionTree() {
   });
 }
 
-// -----------------------------
+// ============================================================
 // ANIMATIONS
-// -----------------------------
+// ============================================================
 function selectAnim(slot, name, el) {
   activeAnims[slot] = name;
-
-  el.parentElement.querySelectorAll(".anim-tag")
-    .forEach(t => t.classList.remove("selected"));
-
-  el.classList.add("selected");
+  requestRender();
 }
 
 function applyAnims() {
@@ -228,7 +191,7 @@ function applyAnims() {
 
   const map = {
     section: ".preview-section",
-    cards: ".ps-card,.ps-glass-card",
+    cards: ".ps-card",
     hero: ".ps-hero-title",
     stats: ".ps-stat-val",
     buttons: ".ps-btn",
@@ -246,9 +209,9 @@ function applyAnims() {
   requestRender();
 }
 
-// -----------------------------
+// ============================================================
 // HOVER EFFECTS
-// -----------------------------
+// ============================================================
 function applyHoverEffects() {
   let style = document.getElementById("hover-effects-style");
 
@@ -271,9 +234,9 @@ function applyHoverEffects() {
   style.textContent = css;
 }
 
-// -----------------------------
-// GENERATOR HOOK
-// -----------------------------
+// ============================================================
+// RENDER HOOK
+// ============================================================
 function requestRender() {
   if (typeof window.generateCode === "function") {
     window.generateCode();
@@ -282,30 +245,14 @@ function requestRender() {
   }
 }
 
-function generateSectionInnerHTML(type, id) {
-  if (typeof window.generateSectionHTML === "function") {
-    return generateSectionHTML(type, id);
-  }
+// ============================================================
+// TEMPLATE ACCESS (GLOBAL SAFE)
+// ============================================================
+window.loadTemplate = bootTemplate;
 
-  return `
-    <div style="padding:20px;color:white">
-      Missing generator: ${type}
-    </div>
-  `;
-}
-// -----------------------------
-// TEMPLATE LOADER
-// -----------------------------
-function safeLoadTemplate(name) {
-  sections = [];
-  sectionCounter = 0;
-
-  const canvas = document.getElementById("preview-canvas");
-  if (canvas) canvas.innerHTML = "";
-
-  updateSectionTree();
-  requestRender();
-}
+// ============================================================
+// GLOBAL EXPORTS (CRITICAL FOR MOBILE)
+// ============================================================
 window.addSection = addSection;
 window.deleteSection = deleteSection;
 window.moveSection = moveSection;
@@ -313,4 +260,3 @@ window.cloneSection = cloneSection;
 window.selectSection = selectSection;
 window.updateSectionTree = updateSectionTree;
 window.applyAnims = applyAnims;
-window.loadTemplate = loadTemplate;
