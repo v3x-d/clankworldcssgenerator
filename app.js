@@ -208,7 +208,7 @@ function applyAnims() {
     if (activeAnims[2] !== "none") el.classList.add("anim-" + activeAnims[2]);
   });
 
-  generateCode();
+  requestRender();
 }
 
 // -----------------------------
@@ -239,13 +239,12 @@ function applyHoverEffects() {
 // -----------------------------
 // GENERATOR HOOK
 // -----------------------------
-function generateCode() {
-  if (typeof window.generateCode === "function" && window.generateCode !== generateCode) {
+function requestRender() {
+  if (typeof window.generateCode === "function") {
     window.generateCode();
-    return;
+  } else {
+    console.warn("Generator not loaded yet");
   }
-
-  console.log("generateCode fallback (no generator connected)");
 }
 
 // -----------------------------
@@ -259,5 +258,5 @@ function safeLoadTemplate(name) {
   if (canvas) canvas.innerHTML = "";
 
   updateSectionTree();
-  generateCode();
+  requestRender();
 }
