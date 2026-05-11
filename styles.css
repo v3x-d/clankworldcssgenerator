@@ -1,16 +1,41 @@
 /* =========================================================
-   CLANK.WORLD RENDER ENGINE CORE STYLES
+   CLANK.WORLD DESIGN SYSTEM CORE
    ========================================================= */
 
 :root {
+  /* BASE */
   --bg: #050710;
-  --card-bg: rgba(17, 20, 40, 0.8);
+  --surface: rgba(17, 20, 40, 0.85);
+  --surface-solid: #111428;
+
+  /* BRAND */
   --accent: #00f5ff;
   --secondary: #b400ff;
-  --text-primary: #e8eeff;
-  --text-muted: #8890bb;
+
+  /* TEXT */
+  --text: #e8eeff;
+  --muted: #8890bb;
+
+  /* BORDERS */
   --border: rgba(0, 245, 255, 0.12);
+
+  /* SHADOWS */
+  --glow: 0 0 25px rgba(0, 245, 255, 0.18);
+
+  /* SPACING SCALE */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --s8: 64px;
 }
+
+/* =========================================================
+   RESET
+   ========================================================= */
 
 * {
   box-sizing: border-box;
@@ -21,22 +46,40 @@
 body {
   font-family: "Exo 2", sans-serif;
   background: var(--bg);
-  color: var(--text-primary);
+  color: var(--text);
+  line-height: 1.5;
 }
 
 /* =========================================================
-   LAYOUT
+   LAYOUT CORE
    ========================================================= */
 
 .preview-section {
   position: relative;
-  padding: 60px 32px;
-  transition: all 0.3s ease;
+  padding: var(--s7) var(--s5);
+  transition: all 0.25s ease;
 }
 
 .preview-section.selected {
   outline: 2px solid var(--accent);
-  box-shadow: 0 0 30px rgba(0,245,255,0.2);
+  box-shadow: var(--glow);
+  border-radius: 12px;
+}
+
+/* =========================================================
+   TYPOGRAPHY SYSTEM
+   ========================================================= */
+
+.ps-title {
+  font-family: "Orbitron", monospace;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: var(--text);
+}
+
+.ps-subtitle {
+  color: var(--muted);
+  max-width: 600px;
 }
 
 /* =========================================================
@@ -45,10 +88,11 @@ body {
 
 .ps-navbar {
   display: flex;
-  gap: 20px;
   align-items: center;
-  padding: 16px 24px;
+  justify-content: space-between;
+  padding: var(--s4) var(--s6);
   border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(10px);
 }
 
 .ps-nav-logo {
@@ -59,11 +103,16 @@ body {
 }
 
 .ps-nav-link {
-  font-size: 10px;
-  color: var(--text-muted);
+  font-size: 11px;
+  color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.ps-nav-link:hover {
+  color: var(--accent);
 }
 
 /* =========================================================
@@ -72,38 +121,46 @@ body {
 
 .ps-hero {
   text-align: center;
+  padding: var(--s8) var(--s5);
 }
 
 .ps-hero-title {
   font-family: Orbitron, monospace;
-  font-size: 48px;
+  font-size: clamp(32px, 5vw, 64px);
   font-weight: 900;
-  line-height: 1.1;
-  margin-bottom: 16px;
+  line-height: 1.05;
+  margin-bottom: var(--s4);
 }
 
 .ps-hero-sub {
-  color: var(--text-muted);
-  max-width: 520px;
-  margin: 0 auto 24px;
+  color: var(--muted);
+  max-width: 600px;
+  margin: 0 auto var(--s5);
 }
 
 /* =========================================================
-   BUTTONS
+   BUTTON SYSTEM
    ========================================================= */
 
 .ps-btn {
-  padding: 12px 24px;
+  padding: var(--s3) var(--s5);
   border: none;
   font-family: Orbitron, monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 2px;
   cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 6px;
 }
 
 .ps-btn-primary {
   background: linear-gradient(135deg, var(--accent), var(--secondary));
   color: #000;
+}
+
+.ps-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glow);
 }
 
 .ps-btn-outline {
@@ -112,56 +169,66 @@ body {
   color: var(--accent);
 }
 
+.ps-btn-outline:hover {
+  background: rgba(0, 245, 255, 0.08);
+}
+
 /* =========================================================
-   CARDS
+   CARD SYSTEM
    ========================================================= */
 
 .ps-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+  gap: var(--s4);
 }
 
 .ps-card {
-  background: var(--card-bg);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 14px;
+  padding: var(--s5);
+  transition: all 0.25s ease;
+}
+
+.ps-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--glow);
 }
 
 /* =========================================================
-   STATS
+   STATS SYSTEM
    ========================================================= */
 
 .ps-stats-row {
   display: flex;
-  gap: 16px;
+  gap: var(--s5);
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .ps-stat-val {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 900;
   color: var(--accent);
   font-family: Orbitron;
 }
 
 .ps-stat-label {
-  font-size: 10px;
-  color: var(--text-muted);
+  font-size: 11px;
+  color: var(--muted);
 }
 
 /* =========================================================
-   GLASS
+   GLASS SYSTEM
    ========================================================= */
 
 .ps-glass-card {
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
-  padding: 20px;
+  padding: var(--s5);
 }
 
 /* =========================================================
@@ -169,8 +236,24 @@ body {
    ========================================================= */
 
 .ps-footer {
-  padding: 40px;
+  padding: var(--s7);
   border-top: 1px solid var(--border);
   text-align: center;
-  color: var(--text-muted);
+  color: var(--muted);
+}
+
+/* =========================================================
+   UTILITY ANCHORS (important for generator)
+   ========================================================= */
+
+.ps-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ps-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s4);
 }
