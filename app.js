@@ -282,6 +282,17 @@ function requestRender() {
   }
 }
 
+function generateSectionInnerHTML(type, id) {
+  if (typeof window.generateSectionHTML === "function") {
+    return generateSectionHTML(type, id);
+  }
+
+  return `
+    <div style="padding:20px;color:white">
+      Missing generator: ${type}
+    </div>
+  `;
+}
 // -----------------------------
 // TEMPLATE LOADER
 // -----------------------------
