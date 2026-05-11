@@ -81,31 +81,33 @@ function renderSection(type, id) {
 // SECTION MANAGEMENT
 // -----------------------------
 function addSection(type) {
-  pushUndo();
-
-  console.log("addSection ran:", type);
-
   const id = ++sectionCounter;
   sections.push({ id, type });
 
   const canvas = document.getElementById("preview-canvas");
   if (!canvas) return;
 
-  const wrapper = document.createElement("div");
-  wrapper.innerHTML = renderSection(type, id);
-
-  const el = wrapper.firstElementChild;
-
-  // FORCE structure correctness
-  el.classList.add("preview-section");
+  const el = document.createElement("div");
+  el.className = "preview-section";
   el.id = `sec-${id}`;
   el.dataset.type = type;
+
+  el.innerHTML = `
+    <div style="
+      padding:20px;
+      margin:10px;
+      border:1px solid #444;
+      color:white;
+      border-radius:8px;
+    ">
+      SECTION: ${type}
+    </div>
+  `;
 
   canvas.appendChild(el);
 
   updateSectionTree();
-  requestRender();
-  showToast(`${type} added`);
+  console.log("SECTION ADDED:", type);
 }
 
 function deleteSection(sid) {
