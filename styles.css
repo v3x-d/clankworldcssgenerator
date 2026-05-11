@@ -1,0 +1,176 @@
+/* =========================================================
+   CLANK.WORLD RENDER ENGINE CORE STYLES
+   ========================================================= */
+
+:root {
+  --bg: #050710;
+  --card-bg: rgba(17, 20, 40, 0.8);
+  --accent: #00f5ff;
+  --secondary: #b400ff;
+  --text-primary: #e8eeff;
+  --text-muted: #8890bb;
+  --border: rgba(0, 245, 255, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Exo 2", sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+}
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+
+.preview-section {
+  position: relative;
+  padding: 60px 32px;
+  transition: all 0.3s ease;
+}
+
+.preview-section.selected {
+  outline: 2px solid var(--accent);
+  box-shadow: 0 0 30px rgba(0,245,255,0.2);
+}
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+.ps-navbar {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ps-nav-logo {
+  font-family: Orbitron, monospace;
+  font-weight: 900;
+  color: var(--accent);
+  letter-spacing: 2px;
+}
+
+.ps-nav-link {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.ps-hero {
+  text-align: center;
+}
+
+.ps-hero-title {
+  font-family: Orbitron, monospace;
+  font-size: 48px;
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+
+.ps-hero-sub {
+  color: var(--text-muted);
+  max-width: 520px;
+  margin: 0 auto 24px;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.ps-btn {
+  padding: 12px 24px;
+  border: none;
+  font-family: Orbitron, monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  cursor: pointer;
+}
+
+.ps-btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--secondary));
+  color: #000;
+}
+
+.ps-btn-outline {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.ps-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.ps-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* =========================================================
+   STATS
+   ========================================================= */
+
+.ps-stats-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ps-stat-val {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--accent);
+  font-family: Orbitron;
+}
+
+.ps-stat-label {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* =========================================================
+   GLASS
+   ========================================================= */
+
+.ps-glass-card {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.ps-footer {
+  padding: 40px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--text-muted);
+}
