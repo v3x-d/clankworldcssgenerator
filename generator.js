@@ -2,7 +2,7 @@
 // CLANK.WORLD GENERATOR ENGINE v2 (ROBUST)
 // generator.js
 // ============================================================
-
+console.log("holy fucking shit why doesn't this load normally.");
 (function () {
   // -----------------------------
   // SAFE GLOBAL HOOKS
