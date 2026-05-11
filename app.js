@@ -1,5 +1,5 @@
 // ============================================================
-// CLANK.WORLD BUILDER ENGINE v2 (FIXED CORE)
+// CLANK.WORLD BUILDER ENGINE v3 (STABLE CORE)
 // app.js
 // ============================================================
 
@@ -8,7 +8,9 @@
 // -----------------------------
 let sections = [];
 let sectionCounter = 0;
+
 let activeAnims = { 1: "none", 2: "none" };
+
 let toggleState = {
   gradTitle: false,
   neonText: false,
@@ -24,9 +26,17 @@ let undoStack = [];
 document.addEventListener("DOMContentLoaded", initBuilder);
 
 function initBuilder() {
+  console.log("Clank Engine booting...");
+
   safeLoadTemplate("landing");
   applyHoverEffects();
-  generateCode();
+
+  // IMPORTANT: defer render so DOM exists
+  setTimeout(() => {
+    requestRender();
+  }, 50);
+
+  console.log("Clank Engine ready");
 }
 
 // -----------------------------
@@ -42,21 +52,28 @@ function pushUndo() {
 }
 
 // -----------------------------
-// SAFE SECTION RENDERING
+// SAFE SECTION RENDER
 // -----------------------------
-function safeRenderSection(type, id) {
+function renderSection(type, id) {
   if (typeof window.generateSectionHTML === "function") {
     return generateSectionHTML(type, id);
   }
 
-  // fallback UI so NOTHING breaks
+  // SAFE FALLBACK (never breaks UI)
   return `
-  <div class="preview-section" id="sec-${id}" data-type="${type}">
-    <div class="section-overlay"></div>
-    <div style="padding:20px;border:1px solid #333;margin:10px;border-radius:8px">
-      <strong>Missing generator:</strong> ${type}
+    <div class="preview-section" id="sec-${id}" data-type="${type}">
+      <div class="section-overlay"></div>
+      <div style="
+        padding:16px;
+        border:1px solid #333;
+        border-radius:8px;
+        margin:10px;
+        color:#aaa;
+        font-family:monospace;
+      ">
+        Missing generator for: <b>${type}</b>
+      </div>
     </div>
-  </div>
   `;
 }
 
@@ -64,25 +81,30 @@ function safeRenderSection(type, id) {
 // SECTION MANAGEMENT
 // -----------------------------
 function addSection(type) {
-  console.log(addSection just ran", type);
+  pushUndo();
+
+  console.log("addSection ran:", type);
 
   const id = ++sectionCounter;
   sections.push({ id, type });
 
   const canvas = document.getElementById("preview-canvas");
+  if (!canvas) return;
 
-  const el = document.createElement("div");
-  el.className = `preview-section ${type}`;
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = renderSection(type, id);
+
+  const el = wrapper.firstElementChild;
+
+  // FORCE structure correctness
+  el.classList.add("preview-section");
   el.id = `sec-${id}`;
   el.dataset.type = type;
-
-  el.innerHTML = generateSectionInnerHTML(type, id);
 
   canvas.appendChild(el);
 
   updateSectionTree();
-  generateCode();
-
+  requestRender();
   showToast(`${type} added`);
 }
 
@@ -90,11 +112,10 @@ function deleteSection(sid) {
   pushUndo();
 
   document.getElementById(sid)?.remove();
-
   sections = sections.filter(s => `sec-${s.id}` !== sid);
 
   updateSectionTree();
-  generateCode();
+  requestRender();
 }
 
 function moveSection(sid, dir) {
@@ -112,7 +133,7 @@ function moveSection(sid, dir) {
   }
 
   updateSectionTree();
-  generateCode();
+  requestRender();
 }
 
 function cloneSection(sid) {
@@ -133,7 +154,7 @@ function cloneSection(sid) {
   el.parentNode.insertBefore(clone, el.nextSibling);
 
   updateSectionTree();
-  generateCode();
+  requestRender();
 }
 
 // -----------------------------
@@ -178,7 +199,7 @@ function updateSectionTree() {
 }
 
 // -----------------------------
-// ANIMATIONS (UNCHANGED CORE)
+// ANIMATIONS
 // -----------------------------
 function selectAnim(slot, name, el) {
   activeAnims[slot] = name;
@@ -244,7 +265,7 @@ function requestRender() {
   if (typeof window.generateCode === "function") {
     window.generateCode();
   } else {
-    console.warn("Generator not loaded yet");
+    console.warn("generateCode not connected yet");
   }
 }
 
