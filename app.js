@@ -64,7 +64,7 @@ function safeRenderSection(type, id) {
 // SECTION MANAGEMENT
 // -----------------------------
 function addSection(type) {
-  pushUndo();
+  console.log(addSection just ran", type);
 
   const id = ++sectionCounter;
   sections.push({ id, type });
