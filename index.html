@@ -6,37 +6,38 @@
   <title>Clank.World Builder</title>
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
 
   <!-- Styles -->
   <link rel="stylesheet" href="style.css">
 
-  <!-- Dev console (mobile debugging) -->
-  <button onclick="toggleDebug()">Debug</button>
+  <!-- DEBUG (Eruda) -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>
-  function toggleDebug() {
-    const enabled = localStorage.getItem("debug") === "1";
-    if (enabled) {
-      localStorage.removeItem("debug");
-      location.reload();
-    } else {
-      localStorage.setItem("debug", "1");
+  <script>
+    function toggleDebug() {
+      const enabled = localStorage.getItem("debug") === "1";
+      if (enabled) {
+        localStorage.removeItem("debug");
+      } else {
+        localStorage.setItem("debug", "1");
+      }
       location.reload();
     }
-  }
 
-  if (localStorage.getItem("debug") === "1") {
-    eruda.init();
-  }
-</script>
+    if (localStorage.getItem("debug") === "1") {
+      eruda.init();
+    }
+  </script>
 </head>
 
 <body>
 
-<!-- =========================================================
-  APP LAYOUT
-========================================================= -->
+<!-- DEBUG BUTTON (must be inside body) -->
+<button style="position:fixed;bottom:10px;right:10px;z-index:9999"
+        onclick="toggleDebug()">
+  Debug
+</button>
+
 <div class="app">
 
   <!-- LEFT SIDEBAR -->
@@ -57,43 +58,43 @@
 
       <hr />
 
-      <button onclick="resetLayout()">Reset</button>
-      <button onclick="savePreset()">Save Preset</button>
-      <button onclick="loadPreset()">Load Preset</button>
+      <button onclick="resetLayout?.()">Reset</button>
+      <button onclick="savePreset?.()">Save Preset</button>
+      <button onclick="loadPreset?.()">Load Preset</button>
     </div>
 
     <div class="panel">
       <h3>THEMES</h3>
 
-      <button onclick="loadTemplate('landing')">Landing</button>
-      <button onclick="loadTemplate('gaming')">Gaming</button>
-      <button onclick="loadTemplate('cyberpunk')">Cyberpunk</button>
-      <button onclick="loadTemplate('glass')">Glass</button>
-      <button onclick="loadTemplate('stats')">Stats</button>
+      <button onclick="loadTemplate?.('landing')">Landing</button>
+      <button onclick="loadTemplate?.('gaming')">Gaming</button>
+      <button onclick="loadTemplate?.('cyberpunk')">Cyberpunk</button>
+      <button onclick="loadTemplate?.('glass')">Glass</button>
+      <button onclick="loadTemplate?.('stats')">Stats</button>
     </div>
 
     <div class="panel">
       <h3>PREVIEW</h3>
 
-      <button onclick="setPreviewSize('desktop', this)">Desktop</button>
-      <button onclick="setPreviewSize('tablet', this)">Tablet</button>
-      <button onclick="setPreviewSize('mobile', this)">Mobile</button>
+      <button onclick="setPreviewSize?.('desktop', this)">Desktop</button>
+      <button onclick="setPreviewSize?.('tablet', this)">Tablet</button>
+      <button onclick="setPreviewSize?.('mobile', this)">Mobile</button>
 
       <div style="margin-top:10px">
-        <button onclick="zoom(0.1)">Zoom +</button>
-        <button onclick="zoom(-0.1)">Zoom -</button>
+        <button onclick="zoom?.(0.1)">Zoom +</button>
+        <button onclick="zoom?.(-0.1)">Zoom -</button>
         <div id="zoom-label">100%</div>
       </div>
     </div>
 
   </aside>
 
-  <!-- CENTER CANVAS -->
+  <!-- CENTER -->
   <main class="canvas-wrapper">
     <div id="preview-canvas" class="preview-canvas"></div>
   </main>
 
-  <!-- RIGHT PANEL -->
+  <!-- RIGHT -->
   <aside class="right-panel">
 
     <div class="panel">
@@ -104,9 +105,9 @@
     <div class="panel">
       <h3>OUTPUT</h3>
 
-      <button onclick="copyCode('html')">Copy HTML</button>
-      <button onclick="copyCode('css')">Copy CSS</button>
-      <button onclick="copyCode('full')">Copy FULL</button>
+      <button onclick="copyCode?.('html')">Copy HTML</button>
+      <button onclick="copyCode?.('css')">Copy CSS</button>
+      <button onclick="copyCode?.('full')">Copy FULL</button>
 
       <pre id="rcode-html"></pre>
       <pre id="rcode-css"></pre>
@@ -117,46 +118,38 @@
 
 </div>
 
-<!-- =========================================================
-  SCRIPTS (ORDER MATTERS)
-========================================================= -->
+<!-- ================================
+     SCRIPT ORDER (IMPORTANT)
+================================ -->
 
-<!-- 1. CORE DATA + GENERATOR -->
 <script src="generator.js"></script>
-
-<!-- 2. APP LOGIC (UI + state + handlers) -->
 <script src="app.js"></script>
 
-<!-- 3. BOOTSTRAP (safe init, no duplicates) -->
+<!-- SINGLE SAFE BOOT -->
 <script>
 (() => {
   let booted = false;
 
-  function initEngine() {
+  function boot() {
     if (booted) return;
     booted = true;
 
     console.log("Clank Engine booting...");
 
-    if (typeof loadTemplate === "function") {
-      loadTemplate("landing");
-    }
+    const safeCall = (fn, arg) =>
+      typeof window[fn] === "function" ? window[fn](arg) : null;
 
-    if (typeof updateSectionTree === "function") {
-      updateSectionTree();
-    }
-
-    if (typeof generateCode === "function") {
-      generateCode();
-    }
+    safeCall("loadTemplate", "landing");
+    safeCall("updateSectionTree");
+    safeCall("generateCode");
 
     console.log("Clank Engine ready");
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initEngine);
+    document.addEventListener("DOMContentLoaded", boot);
   } else {
-    initEngine();
+    boot();
   }
 })();
 </script>
