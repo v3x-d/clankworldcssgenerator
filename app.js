@@ -28,9 +28,20 @@ document.addEventListener("DOMContentLoaded", initBuilder);
 function initBuilder() {
   console.log("Clank Engine booting...");
 
-  safeLoadTemplate("landing");
-  applyHoverEffects();
+  function safeLoadTemplate(name) {
+  sections = [];
+  sectionCounter = 0;
 
+  const canvas = document.getElementById("preview-canvas");
+  if (canvas) canvas.innerHTML = "";
+
+  const defaults = ["navbar", "hero", "cards", "stats", "footer"];
+
+  defaults.forEach(type => addSection(type));
+
+  updateSectionTree();
+  requestRender();
+}
   // IMPORTANT: defer render so DOM exists
   setTimeout(() => {
     requestRender();
@@ -284,3 +295,11 @@ function safeLoadTemplate(name) {
   updateSectionTree();
   requestRender();
 }
+window.addSection = addSection;
+window.deleteSection = deleteSection;
+window.moveSection = moveSection;
+window.cloneSection = cloneSection;
+window.selectSection = selectSection;
+window.updateSectionTree = updateSectionTree;
+window.applyAnims = applyAnims;
+window.loadTemplate = loadTemplate;
