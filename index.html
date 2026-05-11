@@ -12,12 +12,24 @@
   <link rel="stylesheet" href="style.css">
 
   <!-- Dev console (mobile debugging) -->
+  <button onclick="toggleDebug()">Debug</button>
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-  <script>
-    if (location.search.includes("debug")) {
-      eruda.init();
+<script>
+  function toggleDebug() {
+    const enabled = localStorage.getItem("debug") === "1";
+    if (enabled) {
+      localStorage.removeItem("debug");
+      location.reload();
+    } else {
+      localStorage.setItem("debug", "1");
+      location.reload();
     }
-  </script>
+  }
+
+  if (localStorage.getItem("debug") === "1") {
+    eruda.init();
+  }
+</script>
 </head>
 
 <body>
