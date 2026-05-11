@@ -3,7 +3,7 @@
 // generator.js
 // ============================================================
 console.log("holy fucking shit why doesn't this load normally.");
-(function () {
+function () {
   // -----------------------------
   // SAFE GLOBAL HOOKS
   // -----------------------------
