@@ -2,8 +2,12 @@
 // CLANK.WORLD GENERATOR ENGINE v2 (ROBUST)
 // generator.js
 // ============================================================
-console.log("holy fucking shit why doesn't this load normally.");
-function () {
+
+console.log("generator loaded");
+
+(function () {
+  "use strict";
+
   // -----------------------------
   // SAFE GLOBAL HOOKS
   // -----------------------------
@@ -32,34 +36,25 @@ function () {
   };
 
   // -----------------------------
-  // HTML BUILDER (SAFE)
+  // HTML BUILDER
   // -----------------------------
   function buildHTML() {
     const canvas = safe.getCanvas();
     if (!canvas) return fallbackHTML();
 
     const sections = canvas.querySelectorAll(".preview-section");
+    if (!sections.length) return fallbackHTML();
+
     let out = "";
-
-    if (!sections.length) {
-      return fallbackHTML();
-    }
-
-    sections.forEach((sec) => {
-      out += serializeSection(sec);
-    });
+    sections.forEach(sec => out += serializeSection(sec));
 
     return out;
   }
 
-  // -----------------------------
-  // SECTION SERIALIZER
-  // -----------------------------
   function serializeSection(sec) {
     try {
       const clone = sec.cloneNode(true);
 
-      // remove builder artifacts safely
       clone.querySelectorAll(".section-overlay, .drag-handle")
         .forEach(el => el.remove());
 
@@ -76,9 +71,6 @@ function () {
     }
   }
 
-  // -----------------------------
-  // FALLBACK UI (IMPORTANT)
-  // -----------------------------
   function fallbackHTML() {
     return `
 <section class="ps-card" style="margin:20px;padding:20px">
@@ -92,7 +84,7 @@ function () {
   }
 
   // -----------------------------
-  // CSS BUILDER (STABLE CORE)
+  // CSS BUILDER
   // -----------------------------
   function buildCSS() {
     const bg = safe.val("bgColor");
@@ -122,12 +114,8 @@ body{
   font-family:Exo 2, sans-serif;
 }
 
-/* CORE LAYOUT SAFETY */
-.preview-section{
-  margin:12px;
-}
+.preview-section{ margin:12px; }
 
-/* CARDS */
 .ps-card{
   background:var(--card-bg);
   border:1px solid var(--border);
@@ -135,7 +123,6 @@ body{
   padding:18px;
 }
 
-/* BUTTONS */
 .ps-btn{
   padding:10px 14px;
   border-radius:6px;
@@ -148,13 +135,11 @@ body{
   color:#000;
 }
 
-/* GRID */
 .ps-card-grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
   gap:14px;
 }
-
 </style>
 `;
   }
@@ -172,9 +157,7 @@ body{
 ${css}
 </head>
 <body>
-
 ${html}
-
 </body>
 </html>
 `;
@@ -184,17 +167,14 @@ ${html}
   // OUTPUT PIPE
   // -----------------------------
   function pushOutputs(html, css, full) {
+    const setText = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    };
+
     setText("rcode-html", html);
     setText("rcode-css", css);
     setText("rcode-full", full);
-  }
-
-  // -----------------------------
-  // UTIL
-  // -----------------------------
-  function setText(id, val) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = val;
   }
 
 })();
