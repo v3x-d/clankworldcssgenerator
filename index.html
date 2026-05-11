@@ -3,436 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CLANK.STUDIO // Visual Architect</title>
+    <title>CLANK.STUDIO // v2.5 Architect</title>
     <style>
         :root {
-            --bg: #050505;
-            --panel: rgba(20, 20, 25, 0.8);
+            --bg: #030305;
+            --panel: rgba(13, 13, 18, 0.9);
             --accent: #00f2ff;
-            --accent-glow: rgba(0, 242, 255, 0.5);
+            --accent-glow: rgba(0, 242, 255, 0.4);
             --text: #e0e0e0;
-            --border: rgba(255, 255, 255, 0.1);
-            --sidebar-w: 320px;
-            --glass: blur(12px) saturate(180%);
+            --border: rgba(255, 255, 255, 0.08);
+            --glass: blur(15px) saturate(160%);
         }
 
-        * { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; transition: all 0.2s ease-out; }
         body, html { margin: 0; padding: 0; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
 
-        /* UI LAYOUT */
+        /* UI STRUCTURE */
         #app { display: flex; flex-direction: column; height: 100vh; }
         
         header {
-            height: 60px;
-            background: rgba(10, 10, 15, 0.9);
+            height: 55px;
+            background: #000;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             padding: 0 20px;
             justify-content: space-between;
-            z-index: 100;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            z-index: 1000;
         }
 
-        .logo { font-weight: 800; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; }
-        
-        .top-nav { display: flex; gap: 10px; }
-        .btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: 0.2s;
-        }
-        .btn:hover { background: var(--accent); color: black; box-shadow: 0 0 15px var(--accent-glow); }
-        .btn.active { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); }
+        .logo-v2 { font-weight: 900; font-size: 14px; letter-spacing: 3px; color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
 
-        main { display: flex; flex: 1; overflow: hidden; position: relative; }
+        main { display: flex; flex: 1; overflow: hidden; }
 
-        /* SIDEBARS */
+        /* PANELS */
         .sidebar {
-            width: var(--sidebar-w);
+            width: 350px;
             background: var(--panel);
             backdrop-filter: var(--glass);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            transition: 0.3s;
-            z-index: 50;
+            resize: horizontal;
+            overflow: auto;
+            min-width: 280px;
         }
 
-        .tabs-content { flex: 1; overflow-y: auto; padding: 20px; }
-        .tab-pane { display: none; }
-        .tab-pane.active { display: block; }
+        .panel-tab-bar { display: flex; background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--border); }
+        .tab-btn { flex: 1; padding: 12px; font-size: 10px; text-transform: uppercase; border: none; background: none; color: #666; cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: rgba(0,242,255,0.05); }
 
-        .group { margin-bottom: 25px; }
-        .group label { display: block; font-size: 11px; text-transform: uppercase; opacity: 0.6; margin-bottom: 8px; letter-spacing: 1px; }
+        .content-area { flex: 1; padding: 20px; overflow-y: auto; }
+
+        /* INDIVIDUAL TILE EDITOR (NESTED) */
+        .layout-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        .item-header { padding: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 12px; font-weight: bold; background: rgba(255,255,255,0.02); }
+        .item-header:hover { background: rgba(255,255,255,0.05); }
+        .item-controls { padding: 15px; border-top: 1px solid var(--border); display: none; background: #08080a; }
+        .item-controls.open { display: block; }
 
         /* PREVIEW AREA */
-        #canvas-wrapper {
+        #preview-viewport {
             flex: 1;
-            background: #111;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
+            background: #0a0a0c;
+            background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
             overflow: auto;
-            background-image: radial-gradient(circle, #222 1px, transparent 1px);
-            background-size: 30px 30px;
+            display: flex;
+            justify-content: center;
+            padding: 50px;
         }
 
-        #preview-container {
+        #device-frame {
             width: 100%;
             max-width: 1200px;
-            min-height: 800px;
+            min-height: 1000px;
             background: #000;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
             position: relative;
-            transform-origin: top center;
         }
 
-        /* CODE EXPORT PANEL */
-        #export-panel {
-            width: 400px;
-            background: #0a0a0a;
-            border-left: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-        }
-        pre { flex: 1; margin: 0; padding: 15px; font-family: monospace; font-size: 11px; overflow: auto; color: #888; background: #050505; }
+        /* INPUTS */
+        .control-row { margin-bottom: 15px; }
+        .control-row label { display: block; font-size: 10px; color: #888; margin-bottom: 5px; text-transform: uppercase; }
+        input, select { width: 100%; background: #15151a; border: 1px solid #333; color: white; padding: 8px; border-radius: 4px; font-size: 12px; }
+        .flex-row { display: flex; gap: 8px; }
 
-        /* INPUT STYLES */
-        input[type="text"], select, input[type="number"] {
-            width: 100%;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid var(--border);
-            color: white;
-            padding: 8px;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-        .color-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        input[type="color"] { background: none; border: none; width: 30px; height: 30px; cursor: pointer; }
+        /* GENERATED ANIMATIONS */
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        @keyframes cyber-flicker { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
 
-        /* DYNAMIC BUILDER ELEMENTS */
-        .build-item {
-            background: rgba(255,255,255,0.03);
-            border: 1px dashed rgba(255,255,255,0.2);
-            padding: 10px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: grab;
-        }
-        .build-item:hover { border-color: var(--accent); }
-
-        /* MODES */
-        body.horizontal-mode main { flex-direction: column; }
-        body.horizontal-mode .sidebar { width: 100%; height: 250px; border-right: none; border-top: 1px solid var(--border); order: 2; }
-        body.horizontal-mode #export-panel { width: 100%; height: 200px; order: 3; }
-
-        /* GENERATED ELEMENTS PREVIEW STYLES (Scoped to Preview) */
-        #preview-container [contenteditable]:focus { outline: 1px solid var(--accent); background: rgba(0,242,255,0.05); }
-
+        /* UTILITY */
+        .btn-action { background: var(--accent); color: #000; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; }
+        .btn-action:hover { box-shadow: 0 0 15px var(--accent-glow); }
+        .btn-danger { background: #ff4444; color: white; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 10px; }
     </style>
 </head>
-<body>
+<body class="vertical-mode">
 
 <div id="app">
     <header>
-        <div class="logo">Clank.Studio // 2.0</div>
-        <div class="top-nav">
-            <button class="btn active" onclick="toggleMode('vertical')">Vertical Mode</button>
-            <button class="btn" onclick="toggleMode('horizontal')">Horizontal Mode</button>
-            <button class="btn" style="background: #22c55e; color: white;" onclick="exportProject()">Export Code</button>
+        <div class="logo-v2">CLANK.STUDIO // V2.5</div>
+        <div class="top-nav" style="display:flex; gap:10px;">
+            <button class="btn-action" style="background:rgba(255,255,255,0.1); color:white;" onclick="toggleUIMode()">Toggle Layout Mode</button>
+            <button class="btn-action" onclick="exportCode()">Generate & Copy Code</button>
         </div>
     </header>
 
-    <main id="main-editor">
-        <!-- Editor Controls -->
-        <aside class="sidebar">
-            <div style="display:flex; border-bottom: 1px solid var(--border);">
-                <button class="btn" style="flex:1; border:none; border-radius:0;" onclick="showTab('build')">Build</button>
-                <button class="btn" style="flex:1; border:none; border-radius:0;" onclick="showTab('style')">Global</button>
-                <button class="btn" style="flex:1; border:none; border-radius:0;" onclick="showTab('anim')">Anim</button>
+    <main id="editor-core">
+        <aside class="sidebar" id="main-sidebar">
+            <div class="panel-tab-bar">
+                <button class="tab-btn active" onclick="switchTab('build')">Build</button>
+                <button class="tab-btn" onclick="switchTab('visual')">Visual</button>
+                <button class="tab-btn" onclick="switchTab('anim')">Anim</button>
             </div>
-            
-            <div class="tabs-content">
+
+            <div class="content-area">
                 <!-- Build Tab -->
                 <div id="tab-build" class="tab-pane active">
-                    <div class="group">
-                        <label>Add Section</label>
-                        <select id="section-select">
-                            <option value="hero">Hero Section</option>
+                    <div class="control-row">
+                        <label>Add New Component</label>
+                        <select id="comp-picker">
+                            <option value="announcement">Announcement Banner</option>
+                            <option value="marquee">Scrolling Ticker</option>
+                            <option value="hero">Hero Header</option>
                             <option value="grid">Feature Grid</option>
-                            <option value="stats">Stat Meter</option>
-                            <option value="graph">SVG Radar Graph</option>
-                            <option value="footer">Simple Footer</option>
+                            <option value="card">Glass Card</option>
+                            <option value="stats">Stat Cluster</option>
                         </select>
-                        <button class="btn" style="width:100%" onclick="addSection()">+ Add to Layout</button>
+                        <button class="btn-action" style="width:100%; margin-top:10px;" onclick="addComponent()">Insert Component</button>
                     </div>
-                    <div class="group">
-                        <label>Current Layout</label>
-                        <div id="layout-list">
-                            <!-- Items appear here -->
-                        </div>
+                    <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+                    <label style="font-size:10px; color:#555;">ACTIVE HIERARCHY (Click to Edit Tile)</label>
+                    <div id="layout-tree" style="margin-top:10px;"></div>
+                </div>
+
+                <!-- Visual Tab -->
+                <div id="tab-visual" class="tab-pane" style="display:none;">
+                    <div class="control-row">
+                        <label>Global Background Gradient</label>
+                        <input type="text" id="global-grad" placeholder="linear-gradient(45deg, #000, #111)" oninput="updateGlobal()">
+                    </div>
+                    <div class="control-row">
+                        <label>Accent Primary</label>
+                        <input type="color" id="global-accent" value="#00f2ff" oninput="updateGlobal()">
                     </div>
                 </div>
 
-                <!-- Style Tab -->
-                <div id="tab-style" class="tab-pane">
-                    <div class="group">
-                        <label>Main Background</label>
-                        <div class="color-row">
-                            <input type="color" id="bg-color" value="#050505" oninput="updateGlobalStyle()">
-                            <input type="text" id="bg-img" placeholder="Background Image URL" oninput="updateGlobalStyle()">
-                        </div>
-                    </div>
-                    <div class="group">
-                        <label>Accent Color</label>
-                        <input type="color" id="accent-color" value="#00f2ff" oninput="updateGlobalStyle()">
-                    </div>
-                    <div class="group">
-                        <label>Font (Google URL)</label>
-                        <input type="text" id="font-url" placeholder="https://fonts.googleapis..." onchange="loadExternalFont()">
-                    </div>
-                </div>
-
-                <!-- Animation Tab -->
-                <div id="tab-anim" class="tab-pane">
-                    <div class="group">
-                        <label>Active Effects</label>
-                        <select id="global-anim" onchange="updateGlobalStyle()">
-                            <option value="none">No Effect</option>
-                            <option value="scanlines">Cyber Scanlines</option>
-                            <option value="noise">Film Grain</option>
-                            <option value="float">Floating Elements</option>
+                <!-- Anim Tab -->
+                <div id="tab-anim" class="tab-pane" style="display:none;">
+                    <div class="control-row">
+                        <label>Page Overlay</label>
+                        <select id="global-overlay" onchange="updateGlobal()">
+                            <option value="none">Clean</option>
+                            <option value="scanlines">Scanlines</option>
+                            <option value="noise">Static Noise</option>
                         </select>
                     </div>
                 </div>
             </div>
         </aside>
 
-        <!-- Live Preview -->
-        <section id="canvas-wrapper">
-            <div id="preview-container">
-                <!-- Content injected here -->
+        <section id="preview-viewport">
+            <div id="device-frame">
+                <!-- Live Website Rendered Here -->
             </div>
         </section>
-
-        <!-- Code Output -->
-        <aside id="export-panel">
-            <div style="padding: 10px; font-size: 11px; border-bottom: 1px solid var(--border); text-transform: uppercase; opacity: 0.5;">Generated Output</div>
-            <pre id="code-output"></pre>
-            <button class="btn" style="margin:10px" onclick="copyToClipboard()">Copy to Clipboard</button>
-        </aside>
     </main>
 </div>
 
 <script>
-    // --- STATE MANAGEMENT ---
-    let layout = [
-        { id: Date.now(), type: 'hero', title: 'FUTURE ARCHITECT', subtitle: 'Design layouts for clank.world instantly.' }
-    ];
-
-    const templates = {
-        hero: (data) => `
-            <section class="section hero" style="padding: 100px 40px; text-align: center; border-bottom: 1px solid var(--border);">
-                <h1 contenteditable="true" style="font-size: 4rem; margin: 0; color: var(--accent); text-shadow: 0 0 20px var(--accent-glow);">${data.title}</h1>
-                <p contenteditable="true" style="opacity: 0.8; max-width: 600px; margin: 20px auto;">${data.subtitle}</p>
-                <div style="margin-top: 30px;">
-                    <button class="btn">GET STARTED</button>
-                </div>
-            </section>`,
-        grid: (data) => `
-            <section class="section grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 60px 40px;">
-                <div class="card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 30px; border-radius: 8px;">
-                    <h3 contenteditable="true">Modular</h3>
-                    <p contenteditable="true">Edit every piece of code visually.</p>
-                </div>
-                <div class="card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 30px; border-radius: 8px;">
-                    <h3 contenteditable="true">Responsive</h3>
-                    <p contenteditable="true">Mobile first design standards.</p>
-                </div>
-                <div class="card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 30px; border-radius: 8px;">
-                    <h3 contenteditable="true">Fast</h3>
-                    <p contenteditable="true">Pure CSS. No bloat libraries.</p>
-                </div>
-            </section>`,
-        stats: (data) => `
-            <section class="section" style="padding: 40px; display: flex; justify-content: space-around; background: rgba(0, 242, 255, 0.02);">
-                <div style="text-align:center"><div style="font-size: 2.5rem; font-weight: 800; color: var(--accent);">99%</div><div style="font-size: 10px; opacity: 0.5;">UPTIME</div></div>
-                <div style="text-align:center"><div style="font-size: 2.5rem; font-weight: 800; color: var(--accent);">150k</div><div style="font-size: 10px; opacity: 0.5;">USERS</div></div>
-                <div style="text-align:center"><div style="font-size: 2.5rem; font-weight: 800; color: var(--accent);">0.2s</div><div style="font-size: 10px; opacity: 0.5;">LATENCY</div></div>
-            </section>`,
-        graph: (data) => `
-            <section class="section" style="padding: 60px; text-align: center;">
-                <svg width="200" height="200" viewBox="0 0 100 100" style="filter: drop-shadow(0 0 10px var(--accent));">
-                    <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
-                    <circle cx="50" cy="50" r="45" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="283" stroke-dashoffset="70" transform="rotate(-90 50 50)" />
-                    <text x="50" y="55" text-anchor="middle" fill="white" font-size="12" font-weight="bold">80%</text>
-                </svg>
-                <p style="margin-top: 20px; font-size: 12px; opacity: 0.6;">NETWORK PERFORMANCE</p>
-            </section>`
+    // Component Database
+    const comps = {
+        announcement: { 
+            name: "Banner", 
+            html: (id, p) => `<div id="${id}" style="background:${p.bg}; padding:${p.pad}px; text-align:center; font-size:12px; color:${p.color}; border-bottom:1px solid var(--accent);">${p.text}</div>`,
+            params: { text: "Limited Edition Drop - Now Live", bg: "var(--accent)", color: "#000", pad: 10 }
+        },
+        marquee: {
+            name: "Scrolling Ticker",
+            html: (id, p) => `<div id="${id}" style="overflow:hidden; white-space:nowrap; background:#111; padding:15px 0; border-bottom:1px solid var(--border);"><div style="display:inline-block; animation: marquee 20s linear infinite;">${(p.text + ' • ').repeat(10)}</div></div>`,
+            params: { text: "SYSTEM STATUS: OPERATIONAL", speed: 20 }
+        },
+        hero: {
+            name: "Hero Section",
+            html: (id, p) => `<section id="${id}" style="padding:100px 40px; text-align:center; background:radial-gradient(circle at center, rgba(0,242,255,0.05), transparent);"><h1 contenteditable="true" style="font-size:3rem; margin:0;">${p.title}</h1><p contenteditable="true" style="opacity:0.6;">${p.sub}</p></section>`,
+            params: { title: "NEO-GENESIS", sub: "Built for the next generation of web design." }
+        },
+        grid: {
+            name: "Feature Grid",
+            html: (id, p) => `<div id="${id}" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:${p.gap}px; padding:40px;"><div class="tile" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:20px; border-radius:8px;"><h3>Modular</h3><p>Edit every piece.</p></div><div class="tile" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:20px; border-radius:8px;"><h3>Fast</h3><p>Pure CSS.</p></div></div>`,
+            params: { gap: 20 }
+        }
     };
 
-    // --- CORE FUNCTIONS ---
-    function render() {
-        const container = document.getElementById('preview-container');
-        const list = document.getElementById('layout-list');
-        
-        // Render Preview
-        container.innerHTML = layout.map(item => templates[item.type](item)).join('');
-        
-        // Render Sidebar List
-        list.innerHTML = layout.map((item, index) => `
-            <div class="build-item">
-                <span style="font-size: 11px;">${index + 1}. ${item.type.toUpperCase()}</span>
-                <button onclick="removeSection(${index})" style="background:none; border:none; color:#ff4444; cursor:pointer;">×</button>
-            </div>
-        `).join('');
+    let layout = [];
 
-        generateCode();
-    }
-
-    function addSection() {
-        const type = document.getElementById('section-select').value;
-        layout.push({ 
-            id: Date.now(), 
-            type, 
-            title: 'NEW SECTION', 
-            subtitle: 'Click to edit this text directly in the preview.' 
-        });
+    function addComponent() {
+        const type = document.getElementById('comp-picker').value;
+        const id = 'c-' + Math.random().toString(36).substr(2, 9);
+        layout.push({ id, type, params: {...comps[type].params} });
         render();
     }
 
-    function removeSection(index) {
-        layout.splice(index, 1);
+    function removeComponent(id) {
+        layout = layout.filter(item => item.id !== id);
         render();
     }
 
-    function showTab(id) {
-        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-        document.getElementById(`tab-${id}`).classList.add('active');
+    function updateParam(id, key, val) {
+        const item = layout.find(i => i.id === id);
+        item.params[key] = val;
+        render();
     }
 
-    function toggleMode(mode) {
-        document.body.className = mode + '-mode';
-        document.querySelectorAll('.top-nav .btn').forEach(b => b.classList.remove('active'));
+    function switchTab(id) {
+        document.querySelectorAll('.tab-pane').forEach(t => t.style.display = 'none');
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + id).style.display = 'block';
         event.target.classList.add('active');
     }
 
-    function updateGlobalStyle() {
-        const bg = document.getElementById('bg-color').value;
-        const img = document.getElementById('bg-img').value;
-        const accent = document.getElementById('accent-color').value;
-        const effect = document.getElementById('global-anim').value;
-
-        const preview = document.getElementById('preview-container');
-        preview.style.backgroundColor = bg;
-        preview.style.backgroundImage = img ? `url(${img})` : 'none';
+    function render() {
+        const frame = document.getElementById('device-frame');
+        const tree = document.getElementById('layout-tree');
         
-        // Dynamic CSS variables for the preview
-        const cssVars = `
-            #preview-container {
-                --accent: ${accent};
-                --accent-glow: ${accent}88;
-                --border: rgba(255,255,255,0.1);
-            }
-            ${effect === 'scanlines' ? '#preview-container::after { content:""; position:absolute; inset:0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 4px, 3px 100%; pointer-events: none; }' : ''}
-        `;
+        frame.innerHTML = layout.map(item => comps[item.type].html(item.id, item.params)).join('');
         
-        let styleTag = document.getElementById('dynamic-preview-styles');
-        if (!styleTag) {
-            styleTag = document.createElement('style');
-            styleTag.id = 'dynamic-preview-styles';
-            document.head.appendChild(styleTag);
-        }
-        styleTag.innerHTML = cssVars;
-        generateCode();
+        tree.innerHTML = layout.map((item) => `
+            <div class="layout-item">
+                <div class="item-header" onclick="this.nextElementSibling.classList.toggle('open')">
+                    ${comps[item.type].name}
+                    <button class="btn-danger" onclick="removeComponent('${item.id}')">DEL</button>
+                </div>
+                <div class="item-controls">
+                    ${Object.keys(item.params).map(key => `
+                        <div class="control-row">
+                            <label>${key}</label>
+                            <input type="${typeof item.params[key] === 'number' ? 'number' : 'text'}" 
+                                   value="${item.params[key]}" 
+                                   oninput="updateParam('${item.id}', '${key}', this.value)">
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
     }
 
-    function generateCode() {
-        const accent = document.getElementById('accent-color').value;
-        const bg = document.getElementById('bg-color').value;
-        const htmlContent = document.getElementById('preview-container').innerHTML;
-
-        const output = `
-<style>
-:root {
-  --accent: ${accent};
-  --accent-glow: ${accent}80;
-  --bg: ${bg};
-  --border: rgba(255,255,255,0.1);
-}
-
-.clank-body {
-  background: var(--bg);
-  color: #fff;
-  font-family: sans-serif;
-  line-height: 1.6;
-}
-
-.section {
-  position: relative;
-  overflow: hidden;
-}
-
-.btn {
-  background: var(--accent);
-  color: #000;
-  border: none;
-  padding: 10px 24px;
-  font-weight: bold;
-  border-radius: 4px;
-  cursor: pointer;
-  text-transform: uppercase;
-  box-shadow: 0 0 15px var(--accent-glow);
-  transition: 0.3s;
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 25px var(--accent);
-}
-
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-}
-
-@media (max-width: 768px) {
-  .grid { grid-template-columns: 1fr !important; }
-  h1 { font-size: 2.5rem !important; }
-}
-</style>
-
-<div class="clank-body">
-${htmlContent.replace(/contenteditable="true"/g, '')}
-</div>`.trim();
-
-        document.getElementById('code-output').textContent = output;
+    function updateGlobal() {
+        const accent = document.getElementById('global-accent').value;
+        const grad = document.getElementById('global-grad').value;
+        const frame = document.getElementById('device-frame');
+        
+        frame.style.background = grad || '#000';
+        document.documentElement.style.setProperty('--accent', accent);
+        document.documentElement.style.setProperty('--accent-glow', accent + '66');
     }
 
-    function copyToClipboard() {
-        const text = document.getElementById('code-output').textContent;
-        navigator.clipboard.writeText(text);
-        alert('Code copied to clipboard! Ready for clank.world');
+    function exportCode() {
+        const frame = document.getElementById('device-frame');
+        const cleanHtml = frame.innerHTML.replace(/contenteditable="true"/g, '');
+        const style = `<style>:root{--accent:${document.getElementById('global-accent').value};} body{background:#000; color:#fff; margin:0;} @keyframes marquee {0%{transform:translateX(100%);} 100%{transform:translateX(-100%);}}</style>`;
+        
+        navigator.clipboard.writeText(style + cleanHtml);
+        alert("Full Clank-ready code copied!");
     }
 
-    // Initialize
-    render();
-    updateGlobalStyle();
-
-    // Handle inline edits
-    document.getElementById('preview-container').addEventListener('input', () => {
-        generateCode();
-    });
+    // Init
+    addComponent(); // Start with one
 </script>
-
 </body>
 </html>
