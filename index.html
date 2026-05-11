@@ -105,6 +105,22 @@
   CORE SCRIPT (your engine)
 ========================================================= -->
 <script src="app.js"></script>
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    if (typeof loadTemplate === "function") {
+      loadTemplate("landing");
+    }
 
+    if (typeof updateSectionTree === "function") {
+      updateSectionTree();
+    }
+
+    if (typeof generateCode === "function") {
+      generateCode();
+    }
+
+    console.log("Engine booted");
+  });
+</script>
 </body>
 </html>
