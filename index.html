@@ -1,283 +1,3112 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CLANK.STUDIO // v2.5 Architect</title>
-    <style>
-        :root {
-            --bg: #030305;
-            --panel: rgba(13, 13, 18, 0.9);
-            --accent: #00f2ff;
-            --accent-glow: rgba(0, 242, 255, 0.4);
-            --text: #e0e0e0;
-            --border: rgba(255, 255, 255, 0.08);
-            --glass: blur(15px) saturate(160%);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLANK.WORLD — Visual CSS Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   CLANK.WORLD CSS STUDIO — APP STYLES
+   ============================================================ */
+:root {
+  --bg-deep: #050710;
+  --bg-mid: #0a0d1a;
+  --bg-panel: #0d1020;
+  --bg-card: #111428;
+  --bg-hover: #161932;
+  --accent-cyan: #00f5ff;
+  --accent-purple: #b400ff;
+  --accent-pink: #ff006a;
+  --accent-gold: #ffd700;
+  --accent-green: #00ff88;
+  --border-dim: rgba(0,245,255,0.12);
+  --border-glow: rgba(0,245,255,0.4);
+  --text-primary: #e8eeff;
+  --text-secondary: #8890bb;
+  --text-dim: #444a6e;
+  --font-display: 'Orbitron', monospace;
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-body: 'Exo 2', sans-serif;
+  --glow-cyan: 0 0 20px rgba(0,245,255,0.4), 0 0 60px rgba(0,245,255,0.15);
+  --glow-purple: 0 0 20px rgba(180,0,255,0.4), 0 0 60px rgba(180,0,255,0.15);
+  --sidebar-w: 300px;
+  --rightbar-w: 320px;
+  --topbar-h: 52px;
+}
 
-        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; transition: all 0.2s ease-out; }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
+- { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* UI STRUCTURE */
-        #app { display: flex; flex-direction: column; height: 100vh; }
-        
-        header {
-            height: 55px;
-            background: #000;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            justify-content: space-between;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            z-index: 1000;
-        }
+body {
+font-family: var(–font-body);
+background: var(–bg-deep);
+color: var(–text-primary);
+height: 100vh;
+overflow: hidden;
+display: flex;
+flex-direction: column;
+}
 
-        .logo-v2 { font-weight: 900; font-size: 14px; letter-spacing: 3px; color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
+/* –– SCROLLBAR –– */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(–bg-deep); }
+::-webkit-scrollbar-thumb { background: var(–accent-cyan); border-radius: 2px; }
 
-        main { display: flex; flex: 1; overflow: hidden; }
+/* ============================================================
+TOP BAR
+============================================================ */
+#topbar {
+height: var(–topbar-h);
+background: rgba(10,13,26,0.95);
+border-bottom: 1px solid var(–border-dim);
+display: flex;
+align-items: center;
+padding: 0 12px;
+gap: 8px;
+flex-shrink: 0;
+backdrop-filter: blur(20px);
+position: relative;
+z-index: 100;
+}
 
-        /* PANELS */
-        .sidebar {
-            width: 350px;
-            background: var(--panel);
-            backdrop-filter: var(--glass);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            resize: horizontal;
-            overflow: auto;
-            min-width: 280px;
-        }
+.topbar-logo {
+font-family: var(–font-display);
+font-size: 14px;
+font-weight: 900;
+color: var(–accent-cyan);
+text-shadow: var(–glow-cyan);
+letter-spacing: 2px;
+margin-right: 8px;
+white-space: nowrap;
+}
 
-        .panel-tab-bar { display: flex; background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--border); }
-        .tab-btn { flex: 1; padding: 12px; font-size: 10px; text-transform: uppercase; border: none; background: none; color: #666; cursor: pointer; border-bottom: 2px solid transparent; }
-        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: rgba(0,242,255,0.05); }
+.topbar-logo span { color: var(–accent-purple); }
 
-        .content-area { flex: 1; padding: 20px; overflow-y: auto; }
+.tb-sep { width: 1px; height: 28px; background: var(–border-dim); margin: 0 4px; }
 
-        /* INDIVIDUAL TILE EDITOR (NESTED) */
-        .layout-item {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            margin-bottom: 10px;
-            overflow: hidden;
-        }
-        .item-header { padding: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 12px; font-weight: bold; background: rgba(255,255,255,0.02); }
-        .item-header:hover { background: rgba(255,255,255,0.05); }
-        .item-controls { padding: 15px; border-top: 1px solid var(--border); display: none; background: #08080a; }
-        .item-controls.open { display: block; }
+.tb-btn {
+font-family: var(–font-mono);
+font-size: 10px;
+color: var(–text-secondary);
+background: rgba(255,255,255,0.03);
+border: 1px solid var(–border-dim);
+border-radius: 4px;
+padding: 5px 10px;
+cursor: pointer;
+transition: all 0.2s;
+white-space: nowrap;
+letter-spacing: 0.5px;
+}
 
-        /* PREVIEW AREA */
-        #preview-viewport {
-            flex: 1;
-            background: #0a0a0c;
-            background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
-            background-size: 40px 40px;
-            overflow: auto;
-            display: flex;
-            justify-content: center;
-            padding: 50px;
-        }
+.tb-btn:hover { color: var(–accent-cyan); border-color: var(–accent-cyan); background: rgba(0,245,255,0.06); }
+.tb-btn.active { color: var(–accent-cyan); border-color: var(–accent-cyan); background: rgba(0,245,255,0.1); box-shadow: var(–glow-cyan); }
+.tb-btn.danger { color: var(–accent-pink); border-color: rgba(255,0,106,0.3); }
+.tb-btn.danger:hover { background: rgba(255,0,106,0.08); box-shadow: 0 0 15px rgba(255,0,106,0.3); }
 
-        #device-frame {
-            width: 100%;
-            max-width: 1200px;
-            min-height: 1000px;
-            background: #000;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-            position: relative;
-        }
+.tb-spacer { flex: 1; }
 
-        /* INPUTS */
-        .control-row { margin-bottom: 15px; }
-        .control-row label { display: block; font-size: 10px; color: #888; margin-bottom: 5px; text-transform: uppercase; }
-        input, select { width: 100%; background: #15151a; border: 1px solid #333; color: white; padding: 8px; border-radius: 4px; font-size: 12px; }
-        .flex-row { display: flex; gap: 8px; }
+.theme-indicator {
+font-family: var(–font-mono);
+font-size: 9px;
+color: var(–text-dim);
+letter-spacing: 1px;
+}
 
-        /* GENERATED ANIMATIONS */
-        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-        @keyframes cyber-flicker { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
+/* Template dropdown */
+.tb-dropdown {
+position: relative;
+}
+.tb-dropdown-menu {
+display: none;
+position: absolute;
+top: calc(100% + 6px);
+left: 0;
+background: var(–bg-panel);
+border: 1px solid var(–border-dim);
+border-radius: 6px;
+min-width: 200px;
+z-index: 999;
+overflow: hidden;
+box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+.tb-dropdown:hover .tb-dropdown-menu { display: block; }
+.tb-dropdown-item {
+padding: 8px 14px;
+font-family: var(–font-mono);
+font-size: 10px;
+color: var(–text-secondary);
+cursor: pointer;
+border-bottom: 1px solid var(–border-dim);
+transition: all 0.15s;
+}
+.tb-dropdown-item:hover { background: rgba(0,245,255,0.06); color: var(–accent-cyan); padding-left: 20px; }
+.tb-dropdown-item:last-child { border-bottom: none; }
 
-        /* UTILITY */
-        .btn-action { background: var(--accent); color: #000; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; }
-        .btn-action:hover { box-shadow: 0 0 15px var(--accent-glow); }
-        .btn-danger { background: #ff4444; color: white; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 10px; }
-    </style>
+/* ============================================================
+MAIN LAYOUT
+============================================================ */
+#main-layout {
+display: flex;
+flex: 1;
+overflow: hidden;
+height: calc(100vh - var(–topbar-h));
+}
+
+/* ============================================================
+LEFT SIDEBAR
+============================================================ */
+#left-sidebar {
+width: var(–sidebar-w);
+background: var(–bg-panel);
+border-right: 1px solid var(–border-dim);
+display: flex;
+flex-direction: column;
+overflow: hidden;
+flex-shrink: 0;
+transition: width 0.3s;
+}
+
+#left-sidebar.collapsed { width: 40px; }
+#left-sidebar.collapsed .sidebar-content { display: none; }
+
+.sidebar-tab-bar {
+display: flex;
+border-bottom: 1px solid var(–border-dim);
+flex-shrink: 0;
+}
+
+.stab {
+flex: 1;
+padding: 10px 4px;
+font-family: var(–font-mono);
+font-size: 8px;
+color: var(–text-dim);
+text-align: center;
+cursor: pointer;
+border-right: 1px solid var(–border-dim);
+transition: all 0.2s;
+letter-spacing: 0.5px;
+text-transform: uppercase;
+}
+.stab:last-child { border-right: none; }
+.stab.active { color: var(–accent-cyan); background: rgba(0,245,255,0.06); border-bottom: 2px solid var(–accent-cyan); }
+.stab:hover:not(.active) { color: var(–text-secondary); background: rgba(255,255,255,0.02); }
+
+.sidebar-content {
+flex: 1;
+overflow-y: auto;
+padding: 12px;
+}
+
+.ctrl-group {
+margin-bottom: 16px;
+}
+
+.ctrl-group-title {
+font-family: var(–font-mono);
+font-size: 9px;
+color: var(–accent-cyan);
+letter-spacing: 2px;
+text-transform: uppercase;
+margin-bottom: 8px;
+padding-bottom: 4px;
+border-bottom: 1px solid rgba(0,245,255,0.1);
+display: flex;
+align-items: center;
+gap: 6px;
+cursor: pointer;
+}
+
+.ctrl-group-title::before {
+content: ‘’;
+width: 6px; height: 6px;
+background: var(–accent-cyan);
+border-radius: 50%;
+box-shadow: var(–glow-cyan);
+flex-shrink: 0;
+}
+
+.ctrl-group-body { }
+.ctrl-group-body.collapsed { display: none; }
+
+.ctrl-row {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 8px;
+gap: 8px;
+}
+
+.ctrl-label {
+font-family: var(–font-mono);
+font-size: 9px;
+color: var(–text-secondary);
+flex-shrink: 0;
+min-width: 80px;
+}
+
+.ctrl-value {
+font-family: var(–font-mono);
+font-size: 9px;
+color: var(–accent-cyan);
+min-width: 32px;
+text-align: right;
+}
+
+/* Sliders */
+input[type=range] {
+-webkit-appearance: none;
+width: 100%;
+height: 3px;
+background: var(–border-dim);
+border-radius: 2px;
+outline: none;
+cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+-webkit-appearance: none;
+width: 12px; height: 12px;
+border-radius: 50%;
+background: var(–accent-cyan);
+box-shadow: 0 0 8px var(–accent-cyan);
+cursor: pointer;
+}
+
+/* Color pickers */
+input[type=color] {
+width: 32px; height: 24px;
+border: 1px solid var(–border-dim);
+border-radius: 4px;
+background: none;
+cursor: pointer;
+padding: 1px;
+}
+
+/* Toggles */
+.toggle-wrap { display: flex; align-items: center; gap: 8px; }
+.toggle {
+width: 34px; height: 18px;
+background: var(–bg-deep);
+border: 1px solid var(–border-dim);
+border-radius: 9px;
+position: relative;
+cursor: pointer;
+transition: all 0.2s;
+}
+.toggle.on { background: rgba(0,245,255,0.2); border-color: var(–accent-cyan); box-shadow: var(–glow-cyan); }
+.toggle::after {
+content: ‘’;
+position: absolute;
+width: 12px; height: 12px;
+background: var(–text-dim);
+border-radius: 50%;
+top: 2px; left: 2px;
+transition: all 0.2s;
+}
+.toggle.on::after { left: 18px; background: var(–accent-cyan); }
+
+/* Select */
+select {
+background: var(–bg-deep);
+border: 1px solid var(–border-dim);
+color: var(–text-secondary);
+font-family: var(–font-mono);
+font-size: 9px;
+padding: 4px 6px;
+border-radius: 4px;
+width: 100%;
+cursor: pointer;
+outline: none;
+}
+select:focus { border-color: var(–accent-cyan); }
+
+/* Text inputs */
+input[type=text], input[type=url] {
+background: var(–bg-deep);
+border: 1px solid var(–border-dim);
+color: var(–text-secondary);
+font-family: var(–font-mono);
+font-size: 9px;
+padding: 5px 8px;
+border-radius: 4px;
+width: 100%;
+outline: none;
+transition: border-color 0.2s;
+}
+input[type=text]:focus, input[type=url]:focus {
+border-color: var(–accent-cyan);
+color: var(–text-primary);
+}
+
+.ctrl-btn {
+font-family: var(–font-mono);
+font-size: 9px;
+color: var(–text-secondary);
+background: rgba(255,255,255,0.03);
+border: 1px solid var(–border-dim);
+border-radius: 4px;
+padding: 5px 10px;
+cursor: pointer;
+transition: all 0.2s;
+width: 100%;
+text-align: center;
+letter-spacing: 0.5px;
+}
+.ctrl-btn:hover { color: var(–accent-cyan); border-color: var(–accent-cyan); background: rgba(0,245,255,0.06); }
+.ctrl-btn.primary { color: var(–accent-cyan); border-color: rgba(0,245,255,0.4); background: rgba(0,245,255,0.08); }
+.ctrl-btn.primary:hover { box-shadow: var(–glow-cyan); }
+
+/* Animation tag selector */
+.anim-tags {
+display: flex;
+flex-wrap: wrap;
+gap: 4px;
+}
+.anim-tag {
+font-family: var(–font-mono);
+font-size: 8px;
+padding: 3px 7px;
+border: 1px solid var(–border-dim);
+border-radius: 3px;
+color: var(–text-dim);
+cursor: pointer;
+transition: all 0.2s;
+}
+.anim-tag.selected { color: var(–accent-purple); border-color: var(–accent-purple); background: rgba(180,0,255,0.1); }
+.anim-tag:hover:not(.selected) { color: var(–text-secondary); }
+
+/* ============================================================
+CENTER PANEL
+============================================================ */
+#center-panel {
+flex: 1;
+display: flex;
+flex-direction: column;
+overflow: hidden;
+position: relative;
+}
+
+#preview-toolbar {
+height: 36px;
+background: rgba(10,13,26,0.8);
+border-bottom: 1px solid var(–border-dim);
+display: flex;
+align-items: center;
+padding: 0 12px;
+gap: 8px;
+flex-shrink: 0;
+}
+
+.preview-size-btn {
+font-family: var(–font-mono);
+font-size: 8px;
+padding: 3px 8px;
+border: 1px solid var(–border-dim);
+border-radius: 3px;
+color: var(–text-dim);
+cursor: pointer;
+transition: all 0.2s;
+}
+.preview-size-btn.active { color: var(–accent-cyan); border-color: var(–accent-cyan); }
+
+.preview-zoom {
+display: flex;
+align-items: center;
+gap: 6px;
+margin-left: auto;
+font-family: var(–font-mono);
+font-size: 9px;
+color: var(–text-dim);
+}
+
+#preview-frame {
+flex: 1;
+overflow: auto;
+background:
+radial-gradient(ellipse at 20% 50%, rgba(0,245,255,0.03) 0%, transparent 60%),
+radial-gradient(ellipse at 80% 20%, rgba(180,0,255,0.03) 0%, transparent 60%),
+repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,245,255,0.04) 39px, rgba(0,245,255,0.04) 40px),
+repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,245,255,0.04) 39px, rgba(0,245,255,0.04) 40px),
+var(–bg-mid);
+display: flex;
+align-items: flex-start;
+justify-content: center;
+padding: 20px;
+}
+
+#preview-canvas {
+width: 100%;
+max-width: 1100px;
+min-height: 400px;
+background: var(–preview-bg, #080b1a);
+border-radius: 8px;
+overflow: hidden;
+box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 1px rgba(0,245,255,0.2);
+position: relative;
+transition: max-width 0.3s;
+}
+
+#preview-canvas.mobile { max-width: 375px; }
+#preview-canvas.tablet { max-width: 768px; }
+
+/* Section overlay controls */
+.section-overlay {
+position: absolute;
+top: 4px; right: 4px;
+display: none;
+gap: 4px;
+z-index: 50;
+}
+
+.preview-section:hover .section-overlay { display: flex; }
+
+.sec-ctrl {
+font-family: var(–font-mono);
+font-size: 8px;
+padding: 3px 6px;
+border: 1px solid rgba(0,245,255,0.3);
+border-radius: 3px;
+background: rgba(5,7,16,0.9);
+color: var(–accent-cyan);
+cursor: pointer;
+transition: all 0.15s;
+}
+.sec-ctrl:hover { background: rgba(0,245,255,0.15); }
+.sec-ctrl.del { color: var(–accent-pink); border-color: rgba(255,0,106,0.3); }
+.sec-ctrl.del:hover { background: rgba(255,0,106,0.15); }
+
+.preview-section {
+position: relative;
+padding: 40px 32px;
+border-bottom: 1px solid rgba(255,255,255,0.04);
+transition: outline 0.2s;
+}
+
+.preview-section:hover { outline: 1px dashed rgba(0,245,255,0.2); }
+.preview-section.selected { outline: 1px solid rgba(0,245,255,0.5); }
+
+/* Editable text */
+[contenteditable] {
+outline: none;
+cursor: text;
+border-radius: 2px;
+transition: background 0.15s;
+min-width: 20px;
+display: inline-block;
+}
+[contenteditable]:focus {
+background: rgba(0,245,255,0.06);
+outline: 1px dashed rgba(0,245,255,0.3);
+border-radius: 2px;
+}
+
+/* ============================================================
+RIGHT PANEL — CODE OUTPUT
+============================================================ */
+#right-panel {
+width: var(–rightbar-w);
+background: var(–bg-panel);
+border-left: 1px solid var(–border-dim);
+display: flex;
+flex-direction: column;
+flex-shrink: 0;
+}
+
+.rpanel-tabs {
+display: flex;
+border-bottom: 1px solid var(–border-dim);
+flex-shrink: 0;
+}
+
+.rtab {
+flex: 1;
+padding: 10px;
+font-family: var(–font-mono);
+font-size: 9px;
+color: var(–text-dim);
+text-align: center;
+cursor: pointer;
+border-right: 1px solid var(–border-dim);
+transition: all 0.2s;
+letter-spacing: 1px;
+}
+.rtab:last-child { border-right: none; }
+.rtab.active { color: var(–accent-cyan); background: rgba(0,245,255,0.05); border-bottom: 2px solid var(–accent-cyan); }
+
+.rcode-area {
+flex: 1;
+overflow-y: auto;
+padding: 12px;
+font-family: var(–font-mono);
+font-size: 9.5px;
+line-height: 1.7;
+color: #9ab;
+white-space: pre;
+tab-size: 2;
+background: var(–bg-deep);
+display: none;
+}
+.rcode-area.active { display: block; }
+
+/* Code syntax highlighting */
+.tok-tag { color: #00b4d8; }
+.tok-attr { color: #90e0ef; }
+.tok-val { color: #ade8f4; }
+.tok-prop { color: var(–accent-cyan); }
+.tok-selec { color: var(–accent-purple); }
+.tok-comment { color: #444a6e; }
+
+.rpanel-footer {
+padding: 10px;
+border-top: 1px solid var(–border-dim);
+display: flex;
+gap: 6px;
+flex-shrink: 0;
+}
+
+.copy-btn {
+flex: 1;
+font-family: var(–font-mono);
+font-size: 9px;
+padding: 7px;
+border: 1px solid var(–border-dim);
+border-radius: 4px;
+background: rgba(0,245,255,0.04);
+color: var(–text-secondary);
+cursor: pointer;
+transition: all 0.2s;
+text-align: center;
+letter-spacing: 0.5px;
+}
+.copy-btn:hover { color: var(–accent-cyan); border-color: var(–accent-cyan); box-shadow: var(–glow-cyan); }
+.copy-btn.success { color: var(–accent-green); border-color: var(–accent-green); }
+
+/* ============================================================
+BUILD TAB — SECTION ADDER
+============================================================ */
+.build-section-list {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 6px;
+margin-bottom: 12px;
+}
+
+.build-item {
+font-family: var(–font-mono);
+font-size: 8px;
+padding: 8px 6px;
+border: 1px solid var(–border-dim);
+border-radius: 5px;
+color: var(–text-secondary);
+cursor: pointer;
+text-align: center;
+transition: all 0.2s;
+background: var(–bg-deep);
+line-height: 1.4;
+}
+.build-item:hover { color: var(–accent-cyan); border-color: var(–accent-cyan); background: rgba(0,245,255,0.06); transform: translateY(-1px); }
+.build-item .bi-icon {
+display: block;
+font-size: 14px;
+margin-bottom: 3px;
+}
+
+.section-tree {
+border: 1px solid var(–border-dim);
+border-radius: 6px;
+overflow: hidden;
+}
+
+.tree-item {
+padding: 8px 10px;
+border-bottom: 1px solid var(–border-dim);
+font-family: var(–font-mono);
+font-size: 9px;
+color: var(–text-secondary);
+display: flex;
+align-items: center;
+gap: 6px;
+cursor: pointer;
+transition: all 0.15s;
+}
+.tree-item:last-child { border-bottom: none; }
+.tree-item:hover { background: rgba(0,245,255,0.04); }
+.tree-item.active { background: rgba(0,245,255,0.06); color: var(–accent-cyan); }
+
+.tree-item .ti-dot {
+width: 6px; height: 6px;
+background: var(–text-dim);
+border-radius: 50%;
+flex-shrink: 0;
+}
+.tree-item.active .ti-dot { background: var(–accent-cyan); box-shadow: var(–glow-cyan); }
+
+.tree-item .ti-actions {
+margin-left: auto;
+display: flex;
+gap: 4px;
+opacity: 0;
+transition: opacity 0.15s;
+}
+.tree-item:hover .ti-actions { opacity: 1; }
+
+.ti-action {
+font-size: 9px;
+padding: 1px 4px;
+border: 1px solid var(–border-dim);
+border-radius: 2px;
+cursor: pointer;
+transition: all 0.15s;
+color: var(–text-dim);
+}
+.ti-action:hover { color: var(–accent-cyan); border-color: var(–accent-cyan); }
+.ti-action.del:hover { color: var(–accent-pink); border-color: var(–accent-pink); }
+
+/* ============================================================
+GRADIENT BUILDER
+============================================================ */
+.gradient-preview {
+height: 40px;
+border-radius: 6px;
+border: 1px solid var(–border-dim);
+margin-bottom: 8px;
+transition: all 0.3s;
+}
+
+.gradient-stop-row {
+display: flex;
+align-items: center;
+gap: 6px;
+margin-bottom: 4px;
+}
+
+/* ============================================================
+CHART BUILDER (inside preview)
+============================================================ */
+.chart-svg {
+width: 100%;
+max-width: 300px;
+height: auto;
+}
+
+/* ============================================================
+NOTIFICATION / TOAST
+============================================================ */
+.toast {
+position: fixed;
+bottom: 20px;
+left: 50%;
+transform: translateX(-50%) translateY(100px);
+background: var(–bg-card);
+border: 1px solid var(–accent-cyan);
+border-radius: 6px;
+padding: 10px 20px;
+font-family: var(–font-mono);
+font-size: 10px;
+color: var(–accent-cyan);
+box-shadow: var(–glow-cyan);
+z-index: 9999;
+transition: transform 0.3s;
+pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ============================================================
+MODALS
+============================================================ */
+.modal-overlay {
+display: none;
+position: fixed;
+inset: 0;
+background: rgba(5,7,16,0.85);
+z-index: 1000;
+align-items: center;
+justify-content: center;
+backdrop-filter: blur(6px);
+}
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+background: var(–bg-panel);
+border: 1px solid var(–border-dim);
+border-radius: 10px;
+padding: 24px;
+width: 480px;
+max-width: 90vw;
+box-shadow: 0 20px 80px rgba(0,0,0,0.8);
+}
+
+.modal-title {
+font-family: var(–font-display);
+font-size: 14px;
+color: var(–accent-cyan);
+margin-bottom: 16px;
+letter-spacing: 2px;
+}
+
+.modal-close {
+float: right;
+cursor: pointer;
+color: var(–text-dim);
+font-size: 16px;
+margin-top: -4px;
+transition: color 0.2s;
+}
+.modal-close:hover { color: var(–accent-pink); }
+
+/* ============================================================
+ANIMATIONS (CSS ONLY) — used in preview
+============================================================ */
+@keyframes float {
+0%,100% { transform: translateY(0); }
+50% { transform: translateY(-12px); }
+}
+@keyframes pulse-glow {
+0%,100% { opacity: 1; }
+50% { opacity: 0.6; }
+}
+@keyframes shimmer {
+0% { background-position: -200% center; }
+100% { background-position: 200% center; }
+}
+@keyframes rotate-grad {
+0% { filter: hue-rotate(0deg); }
+100% { filter: hue-rotate(360deg); }
+}
+@keyframes marquee {
+0% { transform: translateX(0); }
+100% { transform: translateX(-50%); }
+}
+@keyframes fade-in {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+@keyframes typing {
+from { width: 0; }
+to { width: 100%; }
+}
+@keyframes blink-caret {
+from, to { border-color: transparent; }
+50% { border-color: var(–accent-cyan); }
+}
+@keyframes scanline {
+0% { background-position: 0 0; }
+100% { background-position: 0 100%; }
+}
+@keyframes neon-flicker {
+0%,100% { opacity:1; } 3%,5% { opacity:0.3; } 4% { opacity:1; } 92%,94% { opacity:1; } 93% { opacity:0.4; }
+}
+@keyframes border-spin {
+0% { background-position: 0% 50%; }
+50% { background-position: 100% 50%; }
+100% { background-position: 0% 50%; }
+}
+@keyframes breathing {
+0%,100% { box-shadow: 0 0 10px rgba(0,245,255,0.3); }
+50% { box-shadow: 0 0 30px rgba(0,245,255,0.7), 0 0 60px rgba(0,245,255,0.3); }
+}
+@keyframes ripple {
+0% { transform: scale(1); opacity: 0.8; }
+100% { transform: scale(2); opacity: 0; }
+}
+@keyframes wave {
+0%,100% { transform: rotate(-3deg); }
+50% { transform: rotate(3deg); }
+}
+
+/* ============================================================
+DRAG HANDLE STYLES
+============================================================ */
+.drag-handle {
+position: absolute;
+left: 6px;
+top: 50%;
+transform: translateY(-50%);
+width: 14px;
+cursor: grab;
+color: var(–text-dim);
+font-size: 12px;
+opacity: 0;
+transition: opacity 0.15s;
+}
+.preview-section:hover .drag-handle { opacity: 1; }
+
+/* ============================================================
+SECTION CONTENT STYLES (inside preview)
+============================================================ */
+
+/* Hero */
+.ps-hero {
+text-align: center;
+padding: 80px 32px;
+position: relative;
+overflow: hidden;
+}
+.ps-hero-eyebrow {
+font-family: var(–font-mono);
+font-size: 10px;
+letter-spacing: 4px;
+text-transform: uppercase;
+color: #00f5ff;
+margin-bottom: 16px;
+opacity: 0.8;
+}
+.ps-hero-title {
+font-family: ‘Orbitron’, monospace;
+font-size: clamp(28px, 5vw, 56px);
+font-weight: 900;
+line-height: 1.1;
+margin-bottom: 20px;
+background: linear-gradient(135deg, #e8eeff, #00f5ff, #b400ff);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
+.ps-hero-sub {
+font-size: 14px;
+color: #8890bb;
+max-width: 500px;
+margin: 0 auto 32px;
+line-height: 1.7;
+}
+.ps-hero-cta {
+display: inline-flex;
+gap: 12px;
+flex-wrap: wrap;
+justify-content: center;
+}
+.ps-btn {
+font-family: ‘Orbitron’, monospace;
+font-size: 10px;
+padding: 12px 28px;
+border-radius: 4px;
+cursor: pointer;
+letter-spacing: 2px;
+text-transform: uppercase;
+border: none;
+transition: all 0.3s;
+font-weight: 700;
+}
+.ps-btn-primary {
+background: linear-gradient(135deg, #00f5ff, #b400ff);
+color: #050710;
+box-shadow: 0 0 20px rgba(0,245,255,0.3);
+}
+.ps-btn-primary:hover { box-shadow: 0 0 40px rgba(0,245,255,0.6); transform: translateY(-2px); }
+.ps-btn-outline {
+background: transparent;
+color: #00f5ff;
+border: 1px solid rgba(0,245,255,0.4);
+}
+.ps-btn-outline:hover { background: rgba(0,245,255,0.1); border-color: #00f5ff; }
+
+/* Cards */
+.ps-card-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+gap: 16px;
+}
+.ps-card {
+background: rgba(17,20,40,0.8);
+border: 1px solid rgba(0,245,255,0.12);
+border-radius: 12px;
+padding: 24px;
+transition: all 0.3s;
+position: relative;
+overflow: hidden;
+}
+.ps-card::before {
+content: ‘’;
+position: absolute;
+inset: 0;
+background: linear-gradient(135deg, rgba(0,245,255,0.04), transparent);
+pointer-events: none;
+}
+.ps-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 20px rgba(0,245,255,0.1); border-color: rgba(0,245,255,0.3); }
+.ps-card-icon { font-size: 28px; margin-bottom: 12px; }
+.ps-card-title { font-family: ‘Orbitron’, monospace; font-size: 12px; font-weight: 700; color: #e8eeff; margin-bottom: 8px; letter-spacing: 1px; }
+.ps-card-desc { font-size: 12px; color: #8890bb; line-height: 1.6; }
+
+/* Glass card */
+.ps-glass-card {
+background: rgba(255,255,255,0.05);
+backdrop-filter: blur(20px);
+-webkit-backdrop-filter: blur(20px);
+border: 1px solid rgba(255,255,255,0.12);
+border-radius: 16px;
+padding: 28px;
+}
+
+/* Stats */
+.ps-stats-row {
+display: flex;
+flex-wrap: wrap;
+gap: 16px;
+justify-content: center;
+}
+.ps-stat-item {
+text-align: center;
+flex: 1;
+min-width: 100px;
+}
+.ps-stat-val {
+font-family: ‘Orbitron’, monospace;
+font-size: 32px;
+font-weight: 900;
+color: #00f5ff;
+text-shadow: 0 0 20px rgba(0,245,255,0.5);
+display: block;
+}
+.ps-stat-label {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 9px;
+letter-spacing: 2px;
+color: #8890bb;
+text-transform: uppercase;
+margin-top: 4px;
+}
+
+/* Navbar */
+.ps-navbar {
+display: flex;
+align-items: center;
+padding: 16px 32px;
+gap: 24px;
+background: rgba(5,7,16,0.9);
+border-bottom: 1px solid rgba(0,245,255,0.1);
+backdrop-filter: blur(20px);
+}
+.ps-nav-logo {
+font-family: ‘Orbitron’, monospace;
+font-size: 14px;
+font-weight: 900;
+color: #00f5ff;
+letter-spacing: 2px;
+text-shadow: 0 0 15px rgba(0,245,255,0.5);
+margin-right: auto;
+}
+.ps-nav-link {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 10px;
+color: #8890bb;
+letter-spacing: 1px;
+text-transform: uppercase;
+cursor: pointer;
+transition: color 0.2s;
+}
+.ps-nav-link:hover { color: #00f5ff; }
+
+/* Footer */
+.ps-footer {
+padding: 40px 32px;
+border-top: 1px solid rgba(0,245,255,0.08);
+display: flex;
+flex-wrap: wrap;
+gap: 24px;
+align-items: center;
+justify-content: space-between;
+}
+.ps-footer-logo {
+font-family: ‘Orbitron’, monospace;
+font-size: 12px;
+font-weight: 900;
+color: #00f5ff;
+letter-spacing: 2px;
+}
+.ps-footer-links {
+display: flex;
+gap: 16px;
+}
+.ps-footer-link {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 9px;
+color: #444a6e;
+letter-spacing: 1px;
+text-transform: uppercase;
+cursor: pointer;
+transition: color 0.2s;
+}
+.ps-footer-link:hover { color: #00f5ff; }
+.ps-footer-copy {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 9px;
+color: #444a6e;
+letter-spacing: 0.5px;
+}
+
+/* Leaderboard */
+.ps-lb-row {
+display: flex;
+align-items: center;
+padding: 12px 16px;
+border-bottom: 1px solid rgba(0,245,255,0.06);
+gap: 12px;
+transition: background 0.15s;
+}
+.ps-lb-row:hover { background: rgba(0,245,255,0.04); }
+.ps-lb-rank {
+font-family: ‘Orbitron’, monospace;
+font-size: 11px;
+color: #444a6e;
+width: 24px;
+text-align: center;
+}
+.ps-lb-rank.top { color: #ffd700; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+.ps-lb-avatar {
+width: 32px; height: 32px;
+border-radius: 50%;
+background: linear-gradient(135deg, #00f5ff, #b400ff);
+display: flex; align-items: center; justify-content: center;
+font-family: ‘Orbitron’, monospace; font-size: 10px; color: #050710;
+font-weight: 900; flex-shrink: 0;
+}
+.ps-lb-name {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 11px;
+color: #e8eeff;
+flex: 1;
+}
+.ps-lb-score {
+font-family: ‘Orbitron’, monospace;
+font-size: 11px;
+color: #00f5ff;
+}
+
+/* Announcement banner */
+.ps-banner {
+background: linear-gradient(90deg, rgba(0,245,255,0.1), rgba(180,0,255,0.1), rgba(0,245,255,0.1));
+border: 1px solid rgba(0,245,255,0.2);
+padding: 10px 20px;
+text-align: center;
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 11px;
+color: #e8eeff;
+letter-spacing: 1px;
+}
+
+/* Marquee */
+.ps-marquee-wrap {
+overflow: hidden;
+border-top: 1px solid rgba(0,245,255,0.08);
+border-bottom: 1px solid rgba(0,245,255,0.08);
+padding: 10px 0;
+}
+.ps-marquee-track {
+display: flex;
+gap: 32px;
+animation: marquee 20s linear infinite;
+white-space: nowrap;
+}
+.ps-marquee-item {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 10px;
+letter-spacing: 2px;
+color: #444a6e;
+text-transform: uppercase;
+padding: 0 16px;
+display: flex; align-items: center; gap: 8px;
+}
+.ps-marquee-item::before { content: ‘◆’; color: #00f5ff; font-size: 6px; }
+
+/* Split layout */
+.ps-split {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 32px;
+align-items: center;
+}
+@media (max-width: 600px) {
+.ps-split { grid-template-columns: 1fr; }
+.ps-navbar { flex-wrap: wrap; gap: 12px; }
+}
+
+/* Feature grid */
+.ps-feature-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 12px;
+}
+@media (max-width: 600px) { .ps-feature-grid { grid-template-columns: 1fr; } }
+
+.ps-feature-item {
+padding: 20px;
+border: 1px solid rgba(0,245,255,0.08);
+border-radius: 8px;
+background: rgba(11,14,27,0.6);
+transition: all 0.3s;
+}
+.ps-feature-item:hover { border-color: rgba(0,245,255,0.25); transform: translateY(-2px); }
+
+/* Profile card */
+.ps-profile {
+display: flex;
+flex-direction: column;
+align-items: center;
+text-align: center;
+padding: 40px 24px;
+background: rgba(17,20,40,0.8);
+border: 1px solid rgba(0,245,255,0.12);
+border-radius: 16px;
+max-width: 320px;
+margin: 0 auto;
+}
+.ps-profile-avatar {
+width: 80px; height: 80px;
+border-radius: 50%;
+background: linear-gradient(135deg, #00f5ff, #b400ff);
+margin-bottom: 16px;
+border: 2px solid rgba(0,245,255,0.3);
+box-shadow: 0 0 20px rgba(0,245,255,0.3);
+}
+.ps-profile-name {
+font-family: ‘Orbitron’, monospace;
+font-size: 16px;
+font-weight: 900;
+color: #e8eeff;
+margin-bottom: 4px;
+}
+.ps-profile-tag {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 10px;
+color: #00f5ff;
+letter-spacing: 2px;
+margin-bottom: 16px;
+}
+.ps-social-links {
+display: flex;
+gap: 8px;
+flex-wrap: wrap;
+justify-content: center;
+}
+.ps-social-link {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 9px;
+padding: 5px 12px;
+border: 1px solid rgba(0,245,255,0.2);
+border-radius: 3px;
+color: #8890bb;
+cursor: pointer;
+transition: all 0.2s;
+}
+.ps-social-link:hover { color: #00f5ff; border-color: rgba(0,245,255,0.5); }
+
+/* Section title decoration */
+.ps-section-title {
+font-family: ‘Orbitron’, monospace;
+font-size: clamp(18px, 3vw, 28px);
+font-weight: 700;
+color: #e8eeff;
+margin-bottom: 8px;
+letter-spacing: 1px;
+}
+.ps-section-sub {
+font-size: 13px;
+color: #8890bb;
+margin-bottom: 28px;
+line-height: 1.6;
+}
+.ps-section-header {
+margin-bottom: 28px;
+position: relative;
+padding-bottom: 14px;
+}
+.ps-section-header::after {
+content: ‘’;
+position: absolute;
+bottom: 0;
+left: 0;
+width: 48px;
+height: 2px;
+background: linear-gradient(90deg, #00f5ff, transparent);
+}
+.ps-centered .ps-section-header::after {
+left: 50%;
+transform: translateX(-50%);
+}
+
+/* Scroll card row */
+.ps-hscroll {
+display: flex;
+gap: 12px;
+overflow-x: auto;
+padding-bottom: 8px;
+scrollbar-width: thin;
+}
+.ps-hscroll-card {
+min-width: 180px;
+background: rgba(17,20,40,0.8);
+border: 1px solid rgba(0,245,255,0.12);
+border-radius: 10px;
+padding: 20px;
+flex-shrink: 0;
+transition: all 0.2s;
+}
+.ps-hscroll-card:hover { border-color: rgba(0,245,255,0.3); transform: translateY(-2px); }
+
+/* Sidebar layout */
+.ps-sidebar-layout {
+display: grid;
+grid-template-columns: 220px 1fr;
+gap: 20px;
+align-items: start;
+}
+@media (max-width: 600px) { .ps-sidebar-layout { grid-template-columns: 1fr; } }
+.ps-sidebar-nav {
+background: rgba(11,14,27,0.8);
+border: 1px solid rgba(0,245,255,0.08);
+border-radius: 8px;
+overflow: hidden;
+}
+.ps-sidebar-nav-item {
+padding: 10px 14px;
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 10px;
+color: #8890bb;
+border-bottom: 1px solid rgba(0,245,255,0.05);
+cursor: pointer;
+transition: all 0.15s;
+display: flex; align-items: center; gap: 8px;
+}
+.ps-sidebar-nav-item:hover, .ps-sidebar-nav-item.active { background: rgba(0,245,255,0.06); color: #00f5ff; }
+
+/* Progress bar */
+.ps-progress-wrap { margin-bottom: 10px; }
+.ps-progress-label {
+display: flex;
+justify-content: space-between;
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 9px;
+color: #8890bb;
+margin-bottom: 4px;
+}
+.ps-progress-track {
+height: 6px;
+background: rgba(255,255,255,0.06);
+border-radius: 3px;
+overflow: hidden;
+}
+.ps-progress-fill {
+height: 100%;
+border-radius: 3px;
+background: linear-gradient(90deg, #00f5ff, #b400ff);
+box-shadow: 0 0 8px rgba(0,245,255,0.4);
+transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Anim classes (applied in preview) */
+.anim-float { animation: float 3s ease-in-out infinite; }
+.anim-pulse { animation: pulse-glow 2s ease-in-out infinite; }
+.anim-shimmer {
+background: linear-gradient(90deg, transparent, rgba(0,245,255,0.15), transparent) !important;
+background-size: 200% auto !important;
+animation: shimmer 2.5s linear infinite !important;
+}
+.anim-rotate-grad { animation: rotate-grad 4s linear infinite; }
+.anim-fade-in { animation: fade-in 0.8s ease forwards; }
+.anim-neon-flicker { animation: neon-flicker 3s infinite; }
+.anim-breathing { animation: breathing 2.5s ease-in-out infinite; }
+.anim-wave { animation: wave 2s ease-in-out infinite; }
+
+</style>
 </head>
-<body class="vertical-mode">
+<body>
 
-<div id="app">
-    <header>
-        <div class="logo-v2">CLANK.STUDIO // V2.5</div>
-        <div class="top-nav" style="display:flex; gap:10px;">
-            <button class="btn-action" style="background:rgba(255,255,255,0.1); color:white;" onclick="toggleUIMode()">Toggle Layout Mode</button>
-            <button class="btn-action" onclick="exportCode()">Generate & Copy Code</button>
-        </div>
-    </header>
+<!-- ============================================================
+     TOP BAR
+     ============================================================ -->
 
-    <main id="editor-core">
-        <aside class="sidebar" id="main-sidebar">
-            <div class="panel-tab-bar">
-                <button class="tab-btn active" onclick="switchTab('build')">Build</button>
-                <button class="tab-btn" onclick="switchTab('visual')">Visual</button>
-                <button class="tab-btn" onclick="switchTab('anim')">Anim</button>
-            </div>
+<div id="topbar">
+  <div class="topbar-logo">CLANK<span>.</span>WORLD <span style="color:var(--text-dim);font-size:9px;font-weight:400;letter-spacing:1px">CSS STUDIO</span></div>
+  <div class="tb-sep"></div>
 
-            <div class="content-area">
-                <!-- Build Tab -->
-                <div id="tab-build" class="tab-pane active">
-                    <div class="control-row">
-                        <label>Add New Component</label>
-                        <select id="comp-picker">
-                            <option value="announcement">Announcement Banner</option>
-                            <option value="marquee">Scrolling Ticker</option>
-                            <option value="hero">Hero Header</option>
-                            <option value="grid">Feature Grid</option>
-                            <option value="card">Glass Card</option>
-                            <option value="stats">Stat Cluster</option>
-                        </select>
-                        <button class="btn-action" style="width:100%; margin-top:10px;" onclick="addComponent()">Insert Component</button>
-                    </div>
-                    <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
-                    <label style="font-size:10px; color:#555;">ACTIVE HIERARCHY (Click to Edit Tile)</label>
-                    <div id="layout-tree" style="margin-top:10px;"></div>
-                </div>
+  <div class="tb-dropdown">
+    <button class="tb-btn">⚡ TEMPLATES</button>
+    <div class="tb-dropdown-menu">
+      <div class="tb-dropdown-item" onclick="loadTemplate('cyberpunk')">Cyberpunk Dashboard</div>
+      <div class="tb-dropdown-item" onclick="loadTemplate('gaming')">Gaming Profile</div>
+      <div class="tb-dropdown-item" onclick="loadTemplate('landing')">Futuristic Landing</div>
+      <div class="tb-dropdown-item" onclick="loadTemplate('stats')">Stats Showcase</div>
+      <div class="tb-dropdown-item" onclick="loadTemplate('glass')">Glassmorphism Cards</div>
+      <div class="tb-dropdown-item" onclick="loadTemplate('leaderboard')">Neon Leaderboard</div>
+      <div class="tb-dropdown-item" onclick="loadTemplate('hero')">Animated Hero</div>
+      <div class="tb-dropdown-item" onclick="loadTemplate('profile')">Holographic Profile</div>
+      <div class="tb-dropdown-item" onclick="loadTemplate('terminal')">Terminal UI</div>
+    </div>
+  </div>
 
-                <!-- Visual Tab -->
-                <div id="tab-visual" class="tab-pane" style="display:none;">
-                    <div class="control-row">
-                        <label>Global Background Gradient</label>
-                        <input type="text" id="global-grad" placeholder="linear-gradient(45deg, #000, #111)" oninput="updateGlobal()">
-                    </div>
-                    <div class="control-row">
-                        <label>Accent Primary</label>
-                        <input type="color" id="global-accent" value="#00f2ff" oninput="updateGlobal()">
-                    </div>
-                </div>
+<button class="tb-btn" onclick="undoAction()" title="Undo">↺ UNDO</button>
+<button class="tb-btn" onclick="redoAction()" title="Redo">↻ REDO</button>
 
-                <!-- Anim Tab -->
-                <div id="tab-anim" class="tab-pane" style="display:none;">
-                    <div class="control-row">
-                        <label>Page Overlay</label>
-                        <select id="global-overlay" onchange="updateGlobal()">
-                            <option value="none">Clean</option>
-                            <option value="scanlines">Scanlines</option>
-                            <option value="noise">Static Noise</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <section id="preview-viewport">
-            <div id="device-frame">
-                <!-- Live Website Rendered Here -->
-            </div>
-        </section>
-    </main>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" onclick="savePreset()">💾 SAVE</button>
+  <button class="tb-btn" onclick="loadPreset()">📂 LOAD</button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn danger" onclick="resetLayout()">✕ RESET</button>
+  <div class="tb-spacer"></div>
+  <div class="theme-indicator" id="zoom-display">ZOOM: 100%</div>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" onclick="toggleTheme()" id="theme-btn">☀ LIGHT</button>
 </div>
 
+<!-- ============================================================
+     MAIN LAYOUT
+     ============================================================ -->
+
+<div id="main-layout">
+
+  <!-- ============================================================
+       LEFT SIDEBAR
+       ============================================================ -->
+
+  <div id="left-sidebar">
+    <div class="sidebar-tab-bar">
+      <div class="stab active" data-stab="style" onclick="switchSTab(this,'style')">STYLE</div>
+      <div class="stab" data-stab="build" onclick="switchSTab(this,'build')">BUILD</div>
+      <div class="stab" data-stab="type" onclick="switchSTab(this,'type')">TYPE</div>
+      <div class="stab" data-stab="anim" onclick="switchSTab(this,'anim')">ANIM</div>
+      <div class="stab" data-stab="chart" onclick="switchSTab(this,'chart')">CHART</div>
+    </div>
+
+```
+<!-- STYLE TAB -->
+<div id="stab-style" class="sidebar-content">
+
+  <div class="ctrl-group">
+    <div class="ctrl-group-title" onclick="toggleGroup(this)">BACKGROUND</div>
+    <div class="ctrl-group-body">
+      <div class="ctrl-row">
+        <span class="ctrl-label">BG Color</span>
+        <input type="color" value="#080b1a" id="bgColor" oninput="updateBg()">
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">BG Image URL</span>
+      </div>
+      <div class="ctrl-row">
+        <input type="url" id="bgImageUrl" placeholder="https://..." oninput="updateBg()">
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Overlay Color</span>
+        <input type="color" value="#050710" id="overlayColor" oninput="updateBg()">
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Overlay Alpha</span>
+        <span class="ctrl-value" id="v-overlayAlpha">0.8</span>
+      </div>
+      <input type="range" id="overlayAlpha" min="0" max="1" step="0.05" value="0.8" oninput="syncVal('overlayAlpha','v-overlayAlpha');updateBg()">
+      <div class="ctrl-row" style="margin-top:8px">
+        <span class="ctrl-label">Blur</span>
+        <span class="ctrl-value" id="v-bgBlur">0px</span>
+      </div>
+      <input type="range" id="bgBlur" min="0" max="30" value="0" oninput="syncVal('bgBlur','v-bgBlur','px');updateBg()">
+
+      <div class="ctrl-row" style="margin-top:8px">
+        <span class="ctrl-label">BG Size</span>
+        <select id="bgSize" onchange="updateBg()">
+          <option value="cover">Cover</option>
+          <option value="contain">Contain</option>
+          <option value="auto">Auto</option>
+          <option value="100% 100%">Stretch</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">BG Attach</span>
+        <select id="bgAttach" onchange="updateBg()">
+          <option value="scroll">Scroll</option>
+          <option value="fixed">Fixed/Parallax</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Noise/Grain</span>
+        <div class="toggle" id="tog-grain" onclick="toggleOpt('grain')"></div>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Vignette</span>
+        <div class="toggle" id="tog-vignette" onclick="toggleOpt('vignette')"></div>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Anim BG</span>
+        <div class="toggle" id="tog-animBg" onclick="toggleOpt('animBg')"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ctrl-group">
+    <div class="ctrl-group-title" onclick="toggleGroup(this)">GRADIENT</div>
+    <div class="ctrl-group-body">
+      <div class="gradient-preview" id="grad-preview"></div>
+      <div class="gradient-stop-row">
+        <span class="ctrl-label" style="min-width:50px">Stop 1</span>
+        <input type="color" value="#00f5ff" id="grad1" oninput="updateGradient()">
+        <input type="range" id="grad1pos" min="0" max="100" value="0" oninput="updateGradient()" style="flex:1">
+        <span class="ctrl-value" id="v-grad1pos">0%</span>
+      </div>
+      <div class="gradient-stop-row">
+        <span class="ctrl-label" style="min-width:50px">Stop 2</span>
+        <input type="color" value="#b400ff" id="grad2" oninput="updateGradient()">
+        <input type="range" id="grad2pos" min="0" max="100" value="50" oninput="updateGradient()" style="flex:1">
+        <span class="ctrl-value" id="v-grad2pos">50%</span>
+      </div>
+      <div class="gradient-stop-row">
+        <span class="ctrl-label" style="min-width:50px">Stop 3</span>
+        <input type="color" value="#080b1a" id="grad3" oninput="updateGradient()">
+        <input type="range" id="grad3pos" min="0" max="100" value="100" oninput="updateGradient()" style="flex:1">
+        <span class="ctrl-value" id="v-grad3pos">100%</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Direction</span>
+        <select id="gradDir" onchange="updateGradient()">
+          <option value="135deg">↘ 135°</option>
+          <option value="to right">→ Right</option>
+          <option value="to bottom">↓ Down</option>
+          <option value="to top right">↗ TR</option>
+          <option value="radial">◎ Radial</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Apply to BG</span>
+        <div class="toggle" id="tog-applyGrad" onclick="toggleOpt('applyGrad')"></div>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Apply to Text</span>
+        <div class="toggle" id="tog-gradText" onclick="toggleOpt('gradText')"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ctrl-group">
+    <div class="ctrl-group-title" onclick="toggleGroup(this)">COLORS</div>
+    <div class="ctrl-group-body">
+      <div class="ctrl-row">
+        <span class="ctrl-label">Accent</span>
+        <input type="color" value="#00f5ff" id="colAccent" oninput="applyColors()">
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Secondary</span>
+        <input type="color" value="#b400ff" id="colSecondary" oninput="applyColors()">
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Text Primary</span>
+        <input type="color" value="#e8eeff" id="colTextPrimary" oninput="applyColors()">
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Text Muted</span>
+        <input type="color" value="#8890bb" id="colTextMuted" oninput="applyColors()">
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Card BG</span>
+        <input type="color" value="#111428" id="colCard" oninput="applyColors()">
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Border</span>
+        <input type="color" value="#1a1e38" id="colBorder" oninput="applyColors()">
+      </div>
+    </div>
+  </div>
+
+  <div class="ctrl-group">
+    <div class="ctrl-group-title" onclick="toggleGroup(this)">GLOW &amp; SHADOW</div>
+    <div class="ctrl-group-body">
+      <div class="ctrl-row">
+        <span class="ctrl-label">Glow Color</span>
+        <input type="color" value="#00f5ff" id="glowColor" oninput="applyGlow()">
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Glow Size</span>
+        <span class="ctrl-value" id="v-glowSize">20px</span>
+      </div>
+      <input type="range" id="glowSize" min="0" max="80" value="20" oninput="syncVal('glowSize','v-glowSize','px');applyGlow()">
+      <div class="ctrl-row" style="margin-top:8px">
+        <span class="ctrl-label">Glow Alpha</span>
+        <span class="ctrl-value" id="v-glowAlpha">0.5</span>
+      </div>
+      <input type="range" id="glowAlpha" min="0" max="1" step="0.05" value="0.5" oninput="syncVal('glowAlpha','v-glowAlpha');applyGlow()">
+      <div class="ctrl-row" style="margin-top:8px">
+        <span class="ctrl-label">Apply Glow</span>
+        <select id="glowTarget" onchange="applyGlow()">
+          <option value="none">None</option>
+          <option value="titles">Titles</option>
+          <option value="cards">Cards</option>
+          <option value="buttons">Buttons</option>
+          <option value="borders">Borders</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="ctrl-group">
+    <div class="ctrl-group-title" onclick="toggleGroup(this)">SPACING</div>
+    <div class="ctrl-group-body">
+      <div class="ctrl-row">
+        <span class="ctrl-label">Section Pad</span>
+        <span class="ctrl-value" id="v-secPad">40px</span>
+      </div>
+      <input type="range" id="secPad" min="10" max="120" value="40" oninput="syncVal('secPad','v-secPad','px');applySpacing()">
+      <div class="ctrl-row" style="margin-top:8px">
+        <span class="ctrl-label">H Padding</span>
+        <span class="ctrl-value" id="v-hPad">32px</span>
+      </div>
+      <input type="range" id="hPad" min="8" max="80" value="32" oninput="syncVal('hPad','v-hPad','px');applySpacing()">
+      <div class="ctrl-row" style="margin-top:8px">
+        <span class="ctrl-label">Card Gap</span>
+        <span class="ctrl-value" id="v-cardGap">16px</span>
+      </div>
+      <input type="range" id="cardGap" min="4" max="48" value="16" oninput="syncVal('cardGap','v-cardGap','px');applySpacing()">
+      <div class="ctrl-row" style="margin-top:8px">
+        <span class="ctrl-label">Border Radius</span>
+        <span class="ctrl-value" id="v-borderRad">12px</span>
+      </div>
+      <input type="range" id="borderRad" min="0" max="32" value="12" oninput="syncVal('borderRad','v-borderRad','px');applySpacing()">
+    </div>
+  </div>
+
+</div>
+
+<!-- BUILD TAB -->
+<div id="stab-build" class="sidebar-content" style="display:none">
+  <div class="ctrl-group">
+    <div class="ctrl-group-title">ADD SECTION</div>
+    <div class="build-section-list">
+      <div class="build-item" onclick="addSection('navbar')"><span class="bi-icon">⊞</span>NAVBAR</div>
+      <div class="build-item" onclick="addSection('hero')"><span class="bi-icon">★</span>HERO</div>
+      <div class="build-item" onclick="addSection('cards')"><span class="bi-icon">▦</span>CARDS</div>
+      <div class="build-item" onclick="addSection('stats')"><span class="bi-icon">◈</span>STATS</div>
+      <div class="build-item" onclick="addSection('features')"><span class="bi-icon">⋮⋮⋮</span>FEATURES</div>
+      <div class="build-item" onclick="addSection('split')"><span class="bi-icon">⊟</span>SPLIT</div>
+      <div class="build-item" onclick="addSection('glass')"><span class="bi-icon">◻</span>GLASS</div>
+      <div class="build-item" onclick="addSection('profile')"><span class="bi-icon">◉</span>PROFILE</div>
+      <div class="build-item" onclick="addSection('leaderboard')"><span class="bi-icon">▤</span>LEADER</div>
+      <div class="build-item" onclick="addSection('hscroll')"><span class="bi-icon">⇄</span>SCROLL</div>
+      <div class="build-item" onclick="addSection('banner')"><span class="bi-icon">◈</span>BANNER</div>
+      <div class="build-item" onclick="addSection('marquee')"><span class="bi-icon">⟶</span>MARQUEE</div>
+      <div class="build-item" onclick="addSection('sidebar')"><span class="bi-icon">⊞</span>SIDEBAR</div>
+      <div class="build-item" onclick="addSection('progress')"><span class="bi-icon">▬</span>PROGRESS</div>
+      <div class="build-item" onclick="addSection('footer')"><span class="bi-icon">▱</span>FOOTER</div>
+      <div class="build-item" onclick="addSection('chart')"><span class="bi-icon">◎</span>CHART</div>
+    </div>
+  </div>
+
+  <div class="ctrl-group">
+    <div class="ctrl-group-title">SECTION TREE</div>
+    <div id="section-tree" class="section-tree"></div>
+  </div>
+</div>
+
+<!-- TYPE TAB -->
+<div id="stab-type" class="sidebar-content" style="display:none">
+  <div class="ctrl-group">
+    <div class="ctrl-group-title" onclick="toggleGroup(this)">FONTS</div>
+    <div class="ctrl-group-body">
+      <div class="ctrl-row">
+        <span class="ctrl-label">Display Font</span>
+      </div>
+      <select id="fontDisplay" onchange="applyFonts()">
+        <option value="Orbitron">Orbitron</option>
+        <option value="Exo 2">Exo 2</option>
+        <option value="Rajdhani">Rajdhani</option>
+        <option value="Audiowide">Audiowide</option>
+        <option value="Teko">Teko</option>
+        <option value="Jura">Jura</option>
+        <option value="Nova Mono">Nova Mono</option>
+      </select>
+      <div class="ctrl-row" style="margin-top:8px">
+        <span class="ctrl-label">Body Font</span>
+      </div>
+      <select id="fontBody" onchange="applyFonts()">
+        <option value="Exo 2">Exo 2</option>
+        <option value="Share Tech Mono">Share Tech Mono</option>
+        <option value="Rajdhani">Rajdhani</option>
+        <option value="Barlow">Barlow</option>
+        <option value="Titillium Web">Titillium Web</option>
+      </select>
+      <div class="ctrl-row" style="margin-top:10px">
+        <span class="ctrl-label">Custom Font URL</span>
+      </div>
+      <input type="url" id="customFontUrl" placeholder="Google Fonts embed URL">
+      <div class="ctrl-row" style="margin-top:6px">
+        <input type="text" id="customFontName" placeholder="Font Name">
+        <button class="ctrl-btn" onclick="loadCustomFont()" style="width:auto;padding:5px 10px">LOAD</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ctrl-group">
+    <div class="ctrl-group-title" onclick="toggleGroup(this)">SIZES</div>
+    <div class="ctrl-group-body">
+      <div class="ctrl-row">
+        <span class="ctrl-label">Hero Title</span>
+        <span class="ctrl-value" id="v-szHero">56px</span>
+      </div>
+      <input type="range" id="szHero" min="20" max="100" value="56" oninput="syncVal('szHero','v-szHero','px');applyTypo()">
+      <div class="ctrl-row" style="margin-top:8px">
+        <span class="ctrl-label">Section Title</span>
+        <span class="ctrl-value" id="v-szSection">28px</span>
+      </div>
+      <input type="range" id="szSection" min="14" max="60" value="28" oninput="syncVal('szSection','v-szSection','px');applyTypo()">
+      <div class="ctrl-row" style="margin-top:8px">
+        <span class="ctrl-label">Body Text</span>
+        <span class="ctrl-value" id="v-szBody">14px</span>
+      </div>
+      <input type="range" id="szBody" min="10" max="24" value="14" oninput="syncVal('szBody','v-szBody','px');applyTypo()">
+      <div class="ctrl-row" style="margin-top:8px">
+        <span class="ctrl-label">Letter Spacing</span>
+        <span class="ctrl-value" id="v-letterSpc">0px</span>
+      </div>
+      <input type="range" id="letterSpc" min="-2" max="8" step="0.5" value="0" oninput="syncVal('letterSpc','v-letterSpc','px');applyTypo()">
+      <div class="ctrl-row" style="margin-top:8px">
+        <span class="ctrl-label">Line Height</span>
+        <span class="ctrl-value" id="v-lineH">1.6</span>
+      </div>
+      <input type="range" id="lineH" min="1" max="2.5" step="0.1" value="1.6" oninput="syncVal('lineH','v-lineH');applyTypo()">
+    </div>
+  </div>
+
+  <div class="ctrl-group">
+    <div class="ctrl-group-title" onclick="toggleGroup(this)">EFFECTS</div>
+    <div class="ctrl-group-body">
+      <div class="ctrl-row">
+        <span class="ctrl-label">Text Shadow</span>
+        <span class="ctrl-value" id="v-txtShadow">0px</span>
+      </div>
+      <input type="range" id="txtShadow" min="0" max="30" value="0" oninput="syncVal('txtShadow','v-txtShadow','px');applyTypo()">
+      <div class="ctrl-row" style="margin-top:8px">
+        <span class="ctrl-label">Glow Text</span>
+        <div class="toggle" id="tog-glowText" onclick="toggleOpt('glowText')"></div>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Gradient Text</span>
+        <div class="toggle" id="tog-gradTitle" onclick="toggleOpt('gradTitle')"></div>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Neon Effect</span>
+        <div class="toggle" id="tog-neonText" onclick="toggleOpt('neonText')"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ANIM TAB -->
+<div id="stab-anim" class="sidebar-content" style="display:none">
+  <div class="ctrl-group">
+    <div class="ctrl-group-title">SELECT ELEMENT</div>
+    <select id="animTarget" onchange="refreshAnimUI()">
+      <option value="section">Section (all)</option>
+      <option value="cards">Cards</option>
+      <option value="hero-title">Hero Title</option>
+      <option value="stats">Stats Numbers</option>
+      <option value="buttons">Buttons</option>
+    </select>
+  </div>
+
+  <div class="ctrl-group">
+    <div class="ctrl-group-title">ANIMATION 1</div>
+    <div class="anim-tags" id="anim1-tags">
+      <div class="anim-tag" data-anim="float" onclick="selectAnim(1,'float',this)">Float</div>
+      <div class="anim-tag" data-anim="pulse" onclick="selectAnim(1,'pulse',this)">Pulse Glow</div>
+      <div class="anim-tag" data-anim="shimmer" onclick="selectAnim(1,'shimmer',this)">Shimmer</div>
+      <div class="anim-tag" data-anim="fade-in" onclick="selectAnim(1,'fade-in',this)">Fade In</div>
+      <div class="anim-tag" data-anim="neon-flicker" onclick="selectAnim(1,'neon-flicker',this)">Flicker</div>
+      <div class="anim-tag" data-anim="breathing" onclick="selectAnim(1,'breathing',this)">Breathing</div>
+      <div class="anim-tag" data-anim="wave" onclick="selectAnim(1,'wave',this)">Wave</div>
+      <div class="anim-tag" data-anim="rotate-grad" onclick="selectAnim(1,'rotate-grad',this)">Rotate</div>
+      <div class="anim-tag" data-anim="none" onclick="selectAnim(1,'none',this)">✕ None</div>
+    </div>
+    <div class="ctrl-row" style="margin-top:8px">
+      <span class="ctrl-label">Duration</span>
+      <span class="ctrl-value" id="v-anim1dur">2s</span>
+    </div>
+    <input type="range" id="anim1dur" min="0.5" max="8" step="0.5" value="2" oninput="syncVal('anim1dur','v-anim1dur','s');applyAnims()">
+  </div>
+
+  <div class="ctrl-group">
+    <div class="ctrl-group-title">ANIMATION 2</div>
+    <div class="anim-tags" id="anim2-tags">
+      <div class="anim-tag" data-anim="float" onclick="selectAnim(2,'float',this)">Float</div>
+      <div class="anim-tag" data-anim="pulse" onclick="selectAnim(2,'pulse',this)">Pulse Glow</div>
+      <div class="anim-tag" data-anim="shimmer" onclick="selectAnim(2,'shimmer',this)">Shimmer</div>
+      <div class="anim-tag" data-anim="fade-in" onclick="selectAnim(2,'fade-in',this)">Fade In</div>
+      <div class="anim-tag" data-anim="neon-flicker" onclick="selectAnim(2,'neon-flicker',this)">Flicker</div>
+      <div class="anim-tag" data-anim="breathing" onclick="selectAnim(2,'breathing',this)">Breathing</div>
+      <div class="anim-tag" data-anim="wave" onclick="selectAnim(2,'wave',this)">Wave</div>
+      <div class="anim-tag" data-anim="rotate-grad" onclick="selectAnim(2,'rotate-grad',this)">Rotate</div>
+      <div class="anim-tag selected" data-anim="none" onclick="selectAnim(2,'none',this)">✕ None</div>
+    </div>
+    <div class="ctrl-row" style="margin-top:8px">
+      <span class="ctrl-label">Duration</span>
+      <span class="ctrl-value" id="v-anim2dur">3s</span>
+    </div>
+    <input type="range" id="anim2dur" min="0.5" max="8" step="0.5" value="3" oninput="syncVal('anim2dur','v-anim2dur','s');applyAnims()">
+  </div>
+
+  <div class="ctrl-group">
+    <div class="ctrl-group-title">HOVER EFFECTS</div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Hover Lift</span>
+      <div class="toggle on" id="tog-hoverLift" onclick="toggleOpt('hoverLift')"></div>
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Hover Glow</span>
+      <div class="toggle on" id="tog-hoverGlow" onclick="toggleOpt('hoverGlow')"></div>
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Hover Shine</span>
+      <div class="toggle" id="tog-hoverShine" onclick="toggleOpt('hoverShine')"></div>
+    </div>
+  </div>
+
+  <button class="ctrl-btn primary" onclick="applyAnims()">▶ APPLY ANIMATIONS</button>
+</div>
+
+<!-- CHART TAB -->
+<div id="stab-chart" class="sidebar-content" style="display:none">
+  <div class="ctrl-group">
+    <div class="ctrl-group-title">CHART TYPE</div>
+    <div class="build-section-list">
+      <div class="build-item" onclick="insertChart('donut')"><span class="bi-icon">◎</span>DONUT</div>
+      <div class="build-item" onclick="insertChart('radar')"><span class="bi-icon">✦</span>RADAR</div>
+      <div class="build-item" onclick="insertChart('bar')"><span class="bi-icon">▊</span>BAR</div>
+      <div class="build-item" onclick="insertChart('line')"><span class="bi-icon">↗</span>LINE</div>
+      <div class="build-item" onclick="insertChart('pie')"><span class="bi-icon">◔</span>PIE</div>
+      <div class="build-item" onclick="insertChart('progress')"><span class="bi-icon">▬</span>RING</div>
+    </div>
+  </div>
+  <div class="ctrl-group">
+    <div class="ctrl-group-title" onclick="toggleGroup(this)">CHART COLORS</div>
+    <div class="ctrl-group-body">
+      <div class="ctrl-row">
+        <span class="ctrl-label">Primary</span>
+        <input type="color" value="#00f5ff" id="chartCol1" oninput="updateCharts()">
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Secondary</span>
+        <input type="color" value="#b400ff" id="chartCol2" oninput="updateCharts()">
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Accent</span>
+        <input type="color" value="#ff006a" id="chartCol3" oninput="updateCharts()">
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Glow Effect</span>
+        <div class="toggle on" id="tog-chartGlow" onclick="toggleOpt('chartGlow')"></div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+  </div><!-- /left-sidebar -->
+
+  <!-- ============================================================
+       CENTER PANEL
+       ============================================================ -->
+
+  <div id="center-panel">
+    <div id="preview-toolbar">
+      <div class="preview-size-btn active" onclick="setPreviewSize('desktop',this)">DESKTOP</div>
+      <div class="preview-size-btn" onclick="setPreviewSize('tablet',this)">TABLET</div>
+      <div class="preview-size-btn" onclick="setPreviewSize('mobile',this)">MOBILE</div>
+      <div class="preview-zoom">
+        <button onclick="zoom(-0.1)" style="background:none;border:1px solid var(--border-dim);color:var(--text-dim);width:20px;height:20px;border-radius:3px;cursor:pointer;font-size:12px;line-height:1">−</button>
+        <span id="zoom-label">100%</span>
+        <button onclick="zoom(0.1)" style="background:none;border:1px solid var(--border-dim);color:var(--text-dim);width:20px;height:20px;border-radius:3px;cursor:pointer;font-size:12px;line-height:1">+</button>
+      </div>
+    </div>
+
+```
+<div id="preview-frame">
+  <div id="preview-canvas">
+    <!-- Sections rendered here by JS -->
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- ============================================================
+       RIGHT PANEL
+       ============================================================ -->
+
+  <div id="right-panel">
+    <div class="rpanel-tabs">
+      <div class="rtab active" onclick="switchRTab(this,'html')">HTML</div>
+      <div class="rtab" onclick="switchRTab(this,'css')">CSS</div>
+      <div class="rtab" onclick="switchRTab(this,'full')">FULL</div>
+    </div>
+    <div id="rcode-html" class="rcode-area active"></div>
+    <div id="rcode-css" class="rcode-area"></div>
+    <div id="rcode-full" class="rcode-area"></div>
+    <div class="rpanel-footer">
+      <button class="copy-btn" onclick="copyCode('html')" id="copy-html-btn">📋 COPY HTML</button>
+      <button class="copy-btn" onclick="copyCode('css')" id="copy-css-btn">📋 COPY CSS</button>
+      <button class="copy-btn" onclick="copyCode('full')" id="copy-full-btn">⬇ EXPORT</button>
+    </div>
+  </div>
+
+</div><!-- /main-layout -->
+
+<!-- TOAST -->
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+
 <script>
-    // Component Database
-    const comps = {
-        announcement: { 
-            name: "Banner", 
-            html: (id, p) => `<div id="${id}" style="background:${p.bg}; padding:${p.pad}px; text-align:center; font-size:12px; color:${p.color}; border-bottom:1px solid var(--accent);">${p.text}</div>`,
-            params: { text: "Limited Edition Drop - Now Live", bg: "var(--accent)", color: "#000", pad: 10 }
-        },
-        marquee: {
-            name: "Scrolling Ticker",
-            html: (id, p) => `<div id="${id}" style="overflow:hidden; white-space:nowrap; background:#111; padding:15px 0; border-bottom:1px solid var(--border);"><div style="display:inline-block; animation: marquee 20s linear infinite;">${(p.text + ' • ').repeat(10)}</div></div>`,
-            params: { text: "SYSTEM STATUS: OPERATIONAL", speed: 20 }
-        },
-        hero: {
-            name: "Hero Section",
-            html: (id, p) => `<section id="${id}" style="padding:100px 40px; text-align:center; background:radial-gradient(circle at center, rgba(0,242,255,0.05), transparent);"><h1 contenteditable="true" style="font-size:3rem; margin:0;">${p.title}</h1><p contenteditable="true" style="opacity:0.6;">${p.sub}</p></section>`,
-            params: { title: "NEO-GENESIS", sub: "Built for the next generation of web design." }
-        },
-        grid: {
-            name: "Feature Grid",
-            html: (id, p) => `<div id="${id}" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:${p.gap}px; padding:40px;"><div class="tile" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:20px; border-radius:8px;"><h3>Modular</h3><p>Edit every piece.</p></div><div class="tile" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:20px; border-radius:8px;"><h3>Fast</h3><p>Pure CSS.</p></div></div>`,
-            params: { gap: 20 }
-        }
+// ============================================================
+//  STATE
+// ============================================================
+let sections = [];
+let sectionCounter = 0;
+let currentZoom = 1;
+let undoStack = [];
+let redoStack = [];
+let activeAnims = { 1: 'none', 2: 'none' };
+let toggleState = {
+  grain: false, vignette: false, animBg: false,
+  applyGrad: false, gradText: false,
+  glowText: false, gradTitle: true, neonText: false,
+  hoverLift: true, hoverGlow: true, hoverShine: false,
+  chartGlow: true
+};
+
+// ============================================================
+//  UTILITY
+// ============================================================
+function syncVal(inputId, labelId, suffix='') {
+  const val = document.getElementById(inputId).value;
+  document.getElementById(labelId).textContent = val + suffix;
+}
+
+function toggleGroup(titleEl) {
+  const body = titleEl.nextElementSibling;
+  body.classList.toggle('collapsed');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function pushUndo() {
+  undoStack.push(JSON.stringify(sections));
+  if (undoStack.length > 30) undoStack.shift();
+  redoStack = [];
+}
+
+function undoAction() {
+  if (!undoStack.length) return;
+  redoStack.push(JSON.stringify(sections));
+  sections = JSON.parse(undoStack.pop());
+  renderAllSections();
+  showToast('Undo');
+}
+
+function redoAction() {
+  if (!redoStack.length) return;
+  undoStack.push(JSON.stringify(sections));
+  sections = JSON.parse(redoStack.pop());
+  renderAllSections();
+  showToast('Redo');
+}
+
+// ============================================================
+//  SIDEBAR TABS
+// ============================================================
+function switchSTab(el, tab) {
+  document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('[id^="stab-"]').forEach(p => p.style.display='none');
+  document.getElementById('stab-'+tab).style.display='block';
+}
+
+function switchRTab(el, tab) {
+  document.querySelectorAll('.rtab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.rcode-area').forEach(p => p.classList.remove('active'));
+  document.getElementById('rcode-'+tab).classList.add('active');
+  generateCode();
+}
+
+// ============================================================
+//  TOGGLE HANDLER
+// ============================================================
+function toggleOpt(key) {
+  toggleState[key] = !toggleState[key];
+  const el = document.getElementById('tog-'+key);
+  if (el) el.classList.toggle('on', toggleState[key]);
+  // Act on toggle
+  if (key==='grain'||key==='vignette'||key==='animBg') updateBg();
+  if (key==='applyGrad'||key==='gradText') updateGradient();
+  if (key==='glowText'||key==='gradTitle'||key==='neonText') applyTypo();
+  if (key==='hoverLift'||key==='hoverGlow') applyHoverEffects();
+}
+
+// ============================================================
+//  BACKGROUND
+// ============================================================
+function updateBg() {
+  const canvas = document.getElementById('preview-canvas');
+  const bgColor = document.getElementById('bgColor').value;
+  const imageUrl = document.getElementById('bgImageUrl').value.trim();
+  const overlayColor = document.getElementById('overlayColor').value;
+  const overlayAlpha = document.getElementById('overlayAlpha').value;
+  const blur = document.getElementById('bgBlur').value;
+  const bgSize = document.getElementById('bgSize').value;
+  const bgAttach = document.getElementById('bgAttach').value;
+
+  let styles = `background-color:${bgColor};`;
+
+  let bgLayers = [];
+
+  if (toggleState.vignette) {
+    bgLayers.push('radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.8) 100%)');
+  }
+  if (toggleState.animBg) {
+    bgLayers.push('linear-gradient(135deg, rgba(0,245,255,0.08), rgba(180,0,255,0.08), rgba(0,245,255,0.08))');
+    canvas.style.animation = 'rotate-grad 8s linear infinite';
+  } else {
+    canvas.style.animation = '';
+  }
+  if (toggleState.grain) {
+    bgLayers.push('url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\' opacity=\'0.05\'/%3E%3C/svg%3E")');
+  }
+  bgLayers.push(`linear-gradient(${hexToRgba(overlayColor, overlayAlpha)},${hexToRgba(overlayColor, overlayAlpha)})`);
+  if (imageUrl) bgLayers.push(`url("${imageUrl}")`);
+
+  styles += `background-image:${bgLayers.join(',')};`;
+  styles += `background-size:${imageUrl ? bgSize : 'auto'};`;
+  styles += `background-attachment:${bgAttach};`;
+  if (blur > 0) styles += `backdrop-filter:blur(${blur}px);`;
+
+  canvas.style.cssText += styles;
+  generateCode();
+}
+
+// ============================================================
+//  GRADIENT
+// ============================================================
+function updateGradient() {
+  const c1 = document.getElementById('grad1').value;
+  const c2 = document.getElementById('grad2').value;
+  const c3 = document.getElementById('grad3').value;
+  const p1 = document.getElementById('grad1pos').value;
+  const p2 = document.getElementById('grad2pos').value;
+  const p3 = document.getElementById('grad3pos').value;
+  const dir = document.getElementById('gradDir').value;
+  document.getElementById('v-grad1pos').textContent = p1+'%';
+  document.getElementById('v-grad2pos').textContent = p2+'%';
+  document.getElementById('v-grad3pos').textContent = p3+'%';
+
+  let gradStr;
+  if (dir === 'radial') {
+    gradStr = `radial-gradient(ellipse at center, ${c1} ${p1}%, ${c2} ${p2}%, ${c3} ${p3}%)`;
+  } else {
+    gradStr = `linear-gradient(${dir}, ${c1} ${p1}%, ${c2} ${p2}%, ${c3} ${p3}%)`;
+  }
+  document.getElementById('grad-preview').style.background = gradStr;
+
+  if (toggleState.applyGrad) {
+    document.getElementById('preview-canvas').style.backgroundImage = gradStr;
+  }
+  if (toggleState.gradText) {
+    document.querySelectorAll('.ps-hero-title').forEach(el => {
+      el.style.backgroundImage = gradStr;
+      el.style.webkitBackgroundClip = 'text';
+      el.style.webkitTextFillColor = 'transparent';
+    });
+  }
+  generateCode();
+}
+
+// ============================================================
+//  COLORS
+// ============================================================
+function applyColors() {
+  const accent = document.getElementById('colAccent').value;
+  const secondary = document.getElementById('colSecondary').value;
+  const textPrimary = document.getElementById('colTextPrimary').value;
+  const textMuted = document.getElementById('colTextMuted').value;
+  const cardBg = document.getElementById('colCard').value;
+  const border = document.getElementById('colBorder').value;
+
+  const canvas = document.getElementById('preview-canvas');
+  canvas.style.setProperty('--ps-accent', accent);
+  canvas.style.setProperty('--ps-secondary', secondary);
+
+  document.querySelectorAll('.ps-hero-eyebrow, .ps-stat-val, .ps-nav-logo, .ps-footer-logo, .ps-lb-score').forEach(el => {
+    el.style.color = accent;
+  });
+  document.querySelectorAll('.ps-hero-sub, .ps-card-desc, .ps-stat-label, .ps-nav-link, .ps-footer-link').forEach(el => {
+    el.style.color = textMuted;
+  });
+  document.querySelectorAll('.ps-card-title, .ps-section-title, .ps-profile-name').forEach(el => {
+    el.style.color = textPrimary;
+  });
+  document.querySelectorAll('.ps-card').forEach(el => {
+    el.style.background = cardBg;
+    el.style.borderColor = border;
+  });
+  generateCode();
+}
+
+// ============================================================
+//  GLOW
+// ============================================================
+function applyGlow() {
+  const color = document.getElementById('glowColor').value;
+  const size = document.getElementById('glowSize').value;
+  const alpha = document.getElementById('glowAlpha').value;
+  const target = document.getElementById('glowTarget').value;
+  const glow = `0 0 ${size}px ${hexToRgba(color,alpha)}, 0 0 ${size*2}px ${hexToRgba(color,alpha*0.4)}`;
+  const map = {
+    'titles': '.ps-hero-title,.ps-section-title',
+    'cards': '.ps-card,.ps-glass-card',
+    'buttons': '.ps-btn-primary',
+    'borders': '.ps-card,.ps-feature-item'
+  };
+  if (target !== 'none' && map[target]) {
+    document.querySelectorAll(map[target]).forEach(el => {
+      el.style.boxShadow = glow;
+      if (target === 'titles') { el.style.boxShadow=''; el.style.textShadow = glow; }
+    });
+  }
+  generateCode();
+}
+
+// ============================================================
+//  SPACING
+// ============================================================
+function applySpacing() {
+  const secPad = document.getElementById('secPad').value;
+  const hPad = document.getElementById('hPad').value;
+  const gap = document.getElementById('cardGap').value;
+  const rad = document.getElementById('borderRad').value;
+
+  document.querySelectorAll('.preview-section').forEach(s => {
+    s.style.paddingTop = secPad+'px';
+    s.style.paddingBottom = secPad+'px';
+    s.style.paddingLeft = hPad+'px';
+    s.style.paddingRight = hPad+'px';
+  });
+  document.querySelectorAll('.ps-card-grid,.ps-feature-grid,.ps-stats-row').forEach(g => {
+    g.style.gap = gap+'px';
+  });
+  document.querySelectorAll('.ps-card,.ps-glass-card,.ps-hscroll-card').forEach(c => {
+    c.style.borderRadius = rad+'px';
+  });
+  generateCode();
+}
+
+// ============================================================
+//  TYPOGRAPHY
+// ============================================================
+function applyFonts() {
+  const displayFont = document.getElementById('fontDisplay').value;
+  const bodyFont = document.getElementById('fontBody').value;
+  const gfLink = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(displayFont)}:wght@400;700;900&family=${encodeURIComponent(bodyFont)}:wght@300;400;600&display=swap`;
+
+  let link = document.getElementById('dynamic-gf');
+  if (!link) {
+    link = document.createElement('link');
+    link.id = 'dynamic-gf';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+  }
+  link.href = gfLink;
+
+  document.querySelectorAll('.ps-hero-title,.ps-section-title,.ps-nav-logo,.ps-stat-val,.ps-footer-logo').forEach(el => {
+    el.style.fontFamily = `'${displayFont}', monospace`;
+  });
+  document.querySelectorAll('.ps-card-desc,.ps-hero-sub,.ps-nav-link,.ps-footer-link').forEach(el => {
+    el.style.fontFamily = `'${bodyFont}', sans-serif`;
+  });
+  generateCode();
+}
+
+function loadCustomFont() {
+  const url = document.getElementById('customFontUrl').value;
+  const name = document.getElementById('customFontName').value;
+  if (!url || !name) return;
+  let link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = url;
+  document.head.appendChild(link);
+
+  const opt1 = document.createElement('option');
+  opt1.value = name; opt1.textContent = name;
+  document.getElementById('fontDisplay').appendChild(opt1.cloneNode(true));
+  document.getElementById('fontBody').appendChild(opt1);
+  showToast(`Font "${name}" loaded!`);
+}
+
+function applyTypo() {
+  const heroSize = document.getElementById('szHero').value;
+  const secSize = document.getElementById('szSection').value;
+  const bodySize = document.getElementById('szBody').value;
+  const ltrSpc = document.getElementById('letterSpc').value;
+  const lineH = document.getElementById('lineH').value;
+  const shadow = document.getElementById('txtShadow').value;
+
+  document.querySelectorAll('.ps-hero-title').forEach(el => {
+    el.style.fontSize = heroSize+'px';
+  });
+  document.querySelectorAll('.ps-section-title').forEach(el => {
+    el.style.fontSize = secSize+'px';
+  });
+  document.querySelectorAll('.ps-card-desc,.ps-hero-sub').forEach(el => {
+    el.style.fontSize = bodySize+'px';
+    el.style.lineHeight = lineH;
+  });
+  document.querySelectorAll('.ps-hero-title,.ps-section-title').forEach(el => {
+    el.style.letterSpacing = ltrSpc+'px';
+    if (shadow > 0) {
+      el.style.textShadow = `0 0 ${shadow}px rgba(0,245,255,0.6)`;
+    }
+    if (toggleState.gradTitle) {
+      el.style.backgroundImage = 'linear-gradient(135deg, #e8eeff, #00f5ff, #b400ff)';
+      el.style.webkitBackgroundClip = 'text';
+      el.style.webkitTextFillColor = 'transparent';
+    } else {
+      el.style.backgroundImage = '';
+      el.style.webkitBackgroundClip = '';
+      el.style.webkitTextFillColor = '';
+      el.style.color = '#e8eeff';
+    }
+    if (toggleState.neonText) {
+      el.style.textShadow = `0 0 10px #00f5ff, 0 0 30px #00f5ff, 0 0 60px rgba(0,245,255,0.4)`;
+      el.style.animation = 'neon-flicker 3s infinite';
+    }
+  });
+  generateCode();
+}
+
+// ============================================================
+//  ANIMATIONS
+// ============================================================
+function selectAnim(slot, name, el) {
+  activeAnims[slot] = name;
+  const container = document.getElementById(`anim${slot}-tags`);
+  container.querySelectorAll('.anim-tag').forEach(t => t.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function applyAnims() {
+  const target = document.getElementById('animTarget').value;
+  const dur1 = document.getElementById('anim1dur').value;
+  const dur2 = document.getElementById('anim2dur').value;
+
+  const selMap = {
+    'section': '.preview-section',
+    'cards': '.ps-card,.ps-glass-card,.ps-hscroll-card',
+    'hero-title': '.ps-hero-title',
+    'stats': '.ps-stat-val',
+    'buttons': '.ps-btn'
+  };
+  const elements = document.querySelectorAll(selMap[target] || '.preview-section');
+
+  elements.forEach(el => {
+    // Remove old anim classes
+    ['float','pulse','shimmer','fade-in','neon-flicker','breathing','wave','rotate-grad'].forEach(a => {
+      el.classList.remove('anim-'+a);
+    });
+    el.style.animationDuration = '';
+
+    const a1 = activeAnims[1];
+    const a2 = activeAnims[2];
+    const anims = [];
+    if (a1 !== 'none') { el.classList.add('anim-'+a1); anims.push(`${a1} ${dur1}s`); }
+    if (a2 !== 'none') { el.classList.add('anim-'+a2); anims.push(`${a2} ${dur2}s`); }
+    if (a2 !== 'none' && a1 !== 'none') {
+      el.style.animationDuration = `${dur1}s, ${dur2}s`;
+    }
+  });
+
+  showToast('Animations applied!');
+  generateCode();
+}
+
+function applyHoverEffects() {
+  let style = document.getElementById('hover-effects-style');
+  if (!style) {
+    style = document.createElement('style');
+    style.id = 'hover-effects-style';
+    document.head.appendChild(style);
+  }
+  let css = '';
+  if (toggleState.hoverLift) css += '.ps-card:hover,.ps-glass-card:hover,.ps-hscroll-card:hover{transform:translateY(-6px)!important;}';
+  if (toggleState.hoverGlow) css += '.ps-card:hover{box-shadow:0 12px 40px rgba(0,0,0,0.4),0 0 20px rgba(0,245,255,0.2)!important;}';
+  style.textContent = css;
+}
+
+function refreshAnimUI() {}
+
+// ============================================================
+//  SECTIONS
+// ============================================================
+function generateSectionHTML(type, id) {
+  const sid = `sec-${id}`;
+  const overlays = `<div class="section-overlay">
+    <div class="sec-ctrl" onclick="moveSection('${sid}',-1)" title="Move Up">↑</div>
+    <div class="sec-ctrl" onclick="moveSection('${sid}',1)" title="Move Down">↓</div>
+    <div class="sec-ctrl" onclick="cloneSection('${sid}')" title="Clone">⧉</div>
+    <div class="sec-ctrl del" onclick="deleteSection('${sid}')" title="Delete">✕</div>
+  </div>
+  <div class="drag-handle">⋮⋮</div>`;
+
+  const wrapStart = `<div class="preview-section" id="${sid}" data-type="${type}" onclick="selectSection('${sid}')">`;
+  const wrapEnd = `</div>`;
+
+  const templates = {
+    navbar: `<div class="ps-navbar">
+  <div class="ps-nav-logo" contenteditable="true">CLANK.WORLD</div>
+  <div class="ps-nav-link" contenteditable="true">HOME</div>
+  <div class="ps-nav-link" contenteditable="true">PROFILE</div>
+  <div class="ps-nav-link" contenteditable="true">STATS</div>
+  <div class="ps-nav-link" contenteditable="true">LEADERBOARD</div>
+</div>`,
+
+    hero: `<div class="ps-hero">
+  <div class="ps-hero-eyebrow" contenteditable="true">◆ WELCOME TO THE FUTURE ◆</div>
+  <h1 class="ps-hero-title" contenteditable="true">NEXT LEVEL<br>GAMING</h1>
+  <p class="ps-hero-sub" contenteditable="true">A cutting-edge platform built for creators and champions. Dominate, collaborate, and rise to the top.</p>
+  <div class="ps-hero-cta">
+    <button class="ps-btn ps-btn-primary" contenteditable="true">JOIN NOW</button>
+    <button class="ps-btn ps-btn-outline" contenteditable="true">LEARN MORE</button>
+  </div>
+</div>`,
+
+    cards: `<div class="ps-section-header">
+  <h2 class="ps-section-title" contenteditable="true">FEATURES</h2>
+  <p class="ps-section-sub" contenteditable="true">Everything you need to build and dominate.</p>
+</div>
+<div class="ps-card-grid">
+  <div class="ps-card">
+    <div class="ps-card-icon">⚡</div>
+    <div class="ps-card-title" contenteditable="true">LIGHTNING SPEED</div>
+    <p class="ps-card-desc" contenteditable="true">Ultra-fast performance with zero compromise on quality or power.</p>
+  </div>
+  <div class="ps-card">
+    <div class="ps-card-icon">🔒</div>
+    <div class="ps-card-title" contenteditable="true">SECURE VAULT</div>
+    <p class="ps-card-desc" contenteditable="true">Military-grade security protecting every transaction and asset.</p>
+  </div>
+  <div class="ps-card">
+    <div class="ps-card-icon">🌐</div>
+    <div class="ps-card-title" contenteditable="true">GLOBAL NETWORK</div>
+    <p class="ps-card-desc" contenteditable="true">Connected to players and creators worldwide in real time.</p>
+  </div>
+</div>`,
+
+    stats: `<div class="ps-section-header ps-centered" style="text-align:center">
+  <h2 class="ps-section-title" contenteditable="true">BY THE NUMBERS</h2>
+</div>
+<div class="ps-stats-row">
+  <div class="ps-stat-item">
+    <span class="ps-stat-val" contenteditable="true">12.4K</span>
+    <span class="ps-stat-label" contenteditable="true">Active Players</span>
+  </div>
+  <div class="ps-stat-item">
+    <span class="ps-stat-val" contenteditable="true">98%</span>
+    <span class="ps-stat-label" contenteditable="true">Uptime</span>
+  </div>
+  <div class="ps-stat-item">
+    <span class="ps-stat-val" contenteditable="true">$4.2M</span>
+    <span class="ps-stat-label" contenteditable="true">Distributed</span>
+  </div>
+  <div class="ps-stat-item">
+    <span class="ps-stat-val" contenteditable="true">340+</span>
+    <span class="ps-stat-label" contenteditable="true">Countries</span>
+  </div>
+</div>`,
+
+    features: `<div class="ps-section-header">
+  <h2 class="ps-section-title" contenteditable="true">CAPABILITIES</h2>
+  <p class="ps-section-sub" contenteditable="true">Built with the tools and features that matter most.</p>
+</div>
+<div class="ps-feature-grid">
+  <div class="ps-feature-item">
+    <div class="ps-card-icon">🎮</div>
+    <div class="ps-card-title" contenteditable="true">GAMING ENGINE</div>
+    <p class="ps-card-desc" contenteditable="true">Real-time leaderboards and live match tracking.</p>
+  </div>
+  <div class="ps-feature-item">
+    <div class="ps-card-icon">🏆</div>
+    <div class="ps-card-title" contenteditable="true">TOURNAMENTS</div>
+    <p class="ps-card-desc" contenteditable="true">Host and join competitive events with prize pools.</p>
+  </div>
+  <div class="ps-feature-item">
+    <div class="ps-card-icon">📊</div>
+    <div class="ps-card-title" contenteditable="true">ANALYTICS</div>
+    <p class="ps-card-desc" contenteditable="true">Deep insights into your performance and growth.</p>
+  </div>
+  <div class="ps-feature-item">
+    <div class="ps-card-icon">🔗</div>
+    <div class="ps-card-title" contenteditable="true">INTEGRATIONS</div>
+    <p class="ps-card-desc" contenteditable="true">Connect with Discord, Twitch, and more platforms.</p>
+  </div>
+  <div class="ps-feature-item">
+    <div class="ps-card-icon">💎</div>
+    <div class="ps-card-title" contenteditable="true">NFT ASSETS</div>
+    <p class="ps-card-desc" contenteditable="true">Own and trade unique in-game digital assets.</p>
+  </div>
+  <div class="ps-feature-item">
+    <div class="ps-card-icon">🌟</div>
+    <div class="ps-card-title" contenteditable="true">REPUTATION</div>
+    <p class="ps-card-desc" contenteditable="true">Build your legend and unlock exclusive rewards.</p>
+  </div>
+</div>`,
+
+    split: `<div class="ps-split">
+  <div>
+    <div class="ps-section-header">
+      <h2 class="ps-section-title" contenteditable="true">BUILT FOR CHAMPIONS</h2>
+      <p class="ps-section-sub" contenteditable="true">Clank.world gives competitive players the edge they need. Advanced stats, real-time rankings, and community tools.</p>
+    </div>
+    <button class="ps-btn ps-btn-primary" contenteditable="true">EXPLORE NOW</button>
+  </div>
+  <div style="background:rgba(17,20,40,0.8);border:1px solid rgba(0,245,255,0.12);border-radius:12px;padding:24px;text-align:center;">
+    <div style="font-family:Orbitron,monospace;font-size:48px;color:#00f5ff;text-shadow:0 0 20px rgba(0,245,255,0.5)" contenteditable="true">#1</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:#8890bb;margin-top:8px" contenteditable="true">RANKED PLATFORM</div>
+  </div>
+</div>`,
+
+    glass: `<div class="ps-section-header">
+  <h2 class="ps-section-title" contenteditable="true">GLASSMORPHISM</h2>
+  <p class="ps-section-sub" contenteditable="true">Modern frosted glass aesthetic with depth and clarity.</p>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px">
+  <div class="ps-glass-card">
+    <div class="ps-card-icon">✦</div>
+    <div class="ps-card-title" contenteditable="true">CLARITY</div>
+    <p class="ps-card-desc" contenteditable="true">Frosted glass with depth and translucency.</p>
+  </div>
+  <div class="ps-glass-card">
+    <div class="ps-card-icon">◈</div>
+    <div class="ps-card-title" contenteditable="true">FOCUS</div>
+    <p class="ps-card-desc" contenteditable="true">Layered visual hierarchy with backdrop blur.</p>
+  </div>
+  <div class="ps-glass-card">
+    <div class="ps-card-icon">⬡</div>
+    <div class="ps-card-title" contenteditable="true">DEPTH</div>
+    <p class="ps-card-desc" contenteditable="true">Multi-layered translucent surfaces and light.</p>
+  </div>
+</div>`,
+
+    profile: `<div class="ps-profile">
+  <div class="ps-profile-avatar"></div>
+  <div class="ps-profile-name" contenteditable="true">CLANK MASTER</div>
+  <div class="ps-profile-tag" contenteditable="true">@CLANKMASTER • LVL 99</div>
+  <div class="ps-stats-row" style="margin-bottom:16px;width:100%">
+    <div class="ps-stat-item"><span class="ps-stat-val" style="font-size:20px" contenteditable="true">2,847</span><span class="ps-stat-label" contenteditable="true">WINS</span></div>
+    <div class="ps-stat-item"><span class="ps-stat-val" style="font-size:20px" contenteditable="true">94%</span><span class="ps-stat-label" contenteditable="true">WIN RATE</span></div>
+    <div class="ps-stat-item"><span class="ps-stat-val" style="font-size:20px" contenteditable="true">#12</span><span class="ps-stat-label" contenteditable="true">RANK</span></div>
+  </div>
+  <div class="ps-social-links">
+    <div class="ps-social-link" contenteditable="true">DISCORD</div>
+    <div class="ps-social-link" contenteditable="true">TWITTER</div>
+    <div class="ps-social-link" contenteditable="true">TWITCH</div>
+  </div>
+</div>`,
+
+    leaderboard: `<div class="ps-section-header">
+  <h2 class="ps-section-title" contenteditable="true">LEADERBOARD</h2>
+  <p class="ps-section-sub" contenteditable="true">Top players this season</p>
+</div>
+<div style="border:1px solid rgba(0,245,255,0.08);border-radius:10px;overflow:hidden">
+  <div class="ps-lb-row"><div class="ps-lb-rank top">#1</div><div class="ps-lb-avatar">CK</div><div class="ps-lb-name" contenteditable="true">CLANKMASTER</div><div class="ps-lb-score" contenteditable="true">9,842</div></div>
+  <div class="ps-lb-row"><div class="ps-lb-rank top">#2</div><div class="ps-lb-avatar" style="background:linear-gradient(135deg,#b400ff,#ff006a)">DX</div><div class="ps-lb-name" contenteditable="true">DARKX99</div><div class="ps-lb-score" contenteditable="true">8,417</div></div>
+  <div class="ps-lb-row"><div class="ps-lb-rank top">#3</div><div class="ps-lb-avatar" style="background:linear-gradient(135deg,#ff006a,#ffd700)">NX</div><div class="ps-lb-name" contenteditable="true">NEXUS_OP</div><div class="ps-lb-score" contenteditable="true">7,229</div></div>
+  <div class="ps-lb-row"><div class="ps-lb-rank">#4</div><div class="ps-lb-avatar" style="background:linear-gradient(135deg,#00ff88,#00f5ff)">VX</div><div class="ps-lb-name" contenteditable="true">VOID_EX</div><div class="ps-lb-score" contenteditable="true">6,011</div></div>
+  <div class="ps-lb-row"><div class="ps-lb-rank">#5</div><div class="ps-lb-avatar" style="background:linear-gradient(135deg,#ffd700,#ff006a)">SB</div><div class="ps-lb-name" contenteditable="true">STARBURST</div><div class="ps-lb-score" contenteditable="true">5,884</div></div>
+</div>`,
+
+    hscroll: `<div class="ps-section-header">
+  <h2 class="ps-section-title" contenteditable="true">HORIZONTAL SCROLL</h2>
+</div>
+<div class="ps-hscroll">
+  <div class="ps-hscroll-card"><div class="ps-card-icon">🎮</div><div class="ps-card-title" contenteditable="true">CARD 01</div><p class="ps-card-desc" contenteditable="true">Scroll me horizontally</p></div>
+  <div class="ps-hscroll-card"><div class="ps-card-icon">🏆</div><div class="ps-card-title" contenteditable="true">CARD 02</div><p class="ps-card-desc" contenteditable="true">Swipe for more</p></div>
+  <div class="ps-hscroll-card"><div class="ps-card-icon">⚡</div><div class="ps-card-title" contenteditable="true">CARD 03</div><p class="ps-card-desc" contenteditable="true">Fully customizable</p></div>
+  <div class="ps-hscroll-card"><div class="ps-card-icon">🌟</div><div class="ps-card-title" contenteditable="true">CARD 04</div><p class="ps-card-desc" contenteditable="true">Click to edit text</p></div>
+  <div class="ps-hscroll-card"><div class="ps-card-icon">💎</div><div class="ps-card-title" contenteditable="true">CARD 05</div><p class="ps-card-desc" contenteditable="true">Add more cards</p></div>
+</div>`,
+
+    banner: `<div class="ps-banner" contenteditable="true">
+  ◆ CLANK.WORLD SEASON 3 IS LIVE — JOIN THE CHAMPIONSHIP ◆
+</div>`,
+
+    marquee: `<div class="ps-marquee-wrap">
+  <div class="ps-marquee-track">
+    <div class="ps-marquee-item" contenteditable="true">CLANK.WORLD</div>
+    <div class="ps-marquee-item" contenteditable="true">GAMING PLATFORM</div>
+    <div class="ps-marquee-item" contenteditable="true">SEASON 3</div>
+    <div class="ps-marquee-item" contenteditable="true">LEADERBOARD</div>
+    <div class="ps-marquee-item" contenteditable="true">CHAMPIONSHIPS</div>
+    <div class="ps-marquee-item" contenteditable="true">REWARDS</div>
+    <div class="ps-marquee-item" contenteditable="true">CLANK.WORLD</div>
+    <div class="ps-marquee-item" contenteditable="true">GAMING PLATFORM</div>
+    <div class="ps-marquee-item" contenteditable="true">SEASON 3</div>
+    <div class="ps-marquee-item" contenteditable="true">LEADERBOARD</div>
+    <div class="ps-marquee-item" contenteditable="true">CHAMPIONSHIPS</div>
+    <div class="ps-marquee-item" contenteditable="true">REWARDS</div>
+  </div>
+</div>`,
+
+    sidebar: `<div class="ps-sidebar-layout">
+  <div class="ps-sidebar-nav">
+    <div class="ps-sidebar-nav-item active" contenteditable="true">◉ DASHBOARD</div>
+    <div class="ps-sidebar-nav-item" contenteditable="true">◈ PROFILE</div>
+    <div class="ps-sidebar-nav-item" contenteditable="true">▦ INVENTORY</div>
+    <div class="ps-sidebar-nav-item" contenteditable="true">⚡ MATCHES</div>
+    <div class="ps-sidebar-nav-item" contenteditable="true">🏆 RANKINGS</div>
+    <div class="ps-sidebar-nav-item" contenteditable="true">⚙ SETTINGS</div>
+  </div>
+  <div>
+    <div class="ps-section-header">
+      <h2 class="ps-section-title" contenteditable="true">DASHBOARD</h2>
+      <p class="ps-section-sub" contenteditable="true">Your command center for stats and performance.</p>
+    </div>
+    <div class="ps-card-grid">
+      <div class="ps-card"><div class="ps-card-title" contenteditable="true">TOTAL WINS</div><div class="ps-stat-val" style="font-size:24px" contenteditable="true">1,284</div></div>
+      <div class="ps-card"><div class="ps-card-title" contenteditable="true">WIN STREAK</div><div class="ps-stat-val" style="font-size:24px" contenteditable="true">12</div></div>
+    </div>
+  </div>
+</div>`,
+
+    progress: `<div class="ps-section-header">
+  <h2 class="ps-section-title" contenteditable="true">SKILL PROGRESS</h2>
+</div>
+<div class="ps-progress-wrap"><div class="ps-progress-label"><span contenteditable="true">AIM ACCURACY</span><span contenteditable="true">84%</span></div><div class="ps-progress-track"><div class="ps-progress-fill" style="width:84%"></div></div></div>
+<div class="ps-progress-wrap"><div class="ps-progress-label"><span contenteditable="true">REACTION TIME</span><span contenteditable="true">71%</span></div><div class="ps-progress-track"><div class="ps-progress-fill" style="width:71%;background:linear-gradient(90deg,#b400ff,#ff006a)"></div></div></div>
+<div class="ps-progress-wrap"><div class="ps-progress-label"><span contenteditable="true">STRATEGY IQ</span><span contenteditable="true">92%</span></div><div class="ps-progress-track"><div class="ps-progress-fill" style="width:92%;background:linear-gradient(90deg,#00ff88,#00f5ff)"></div></div></div>
+<div class="ps-progress-wrap"><div class="ps-progress-label"><span contenteditable="true">TEAMWORK</span><span contenteditable="true">67%</span></div><div class="ps-progress-track"><div class="ps-progress-fill" style="width:67%;background:linear-gradient(90deg,#ffd700,#ff006a)"></div></div></div>`,
+
+    footer: `<div class="ps-footer">
+  <div>
+    <div class="ps-footer-logo" contenteditable="true">CLANK.WORLD</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#444a6e;margin-top:4px" contenteditable="true">NEXT-GEN GAMING PLATFORM</div>
+  </div>
+  <div class="ps-footer-links">
+    <div class="ps-footer-link" contenteditable="true">PRIVACY</div>
+    <div class="ps-footer-link" contenteditable="true">TERMS</div>
+    <div class="ps-footer-link" contenteditable="true">CONTACT</div>
+    <div class="ps-footer-link" contenteditable="true">DOCS</div>
+  </div>
+  <div class="ps-footer-copy" contenteditable="true">© 2025 CLANK.WORLD — ALL RIGHTS RESERVED</div>
+</div>`,
+
+    chart: `<div class="ps-section-header ps-centered" style="text-align:center">
+  <h2 class="ps-section-title" contenteditable="true">PERFORMANCE CHARTS</h2>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:24px;justify-content:center;align-items:flex-start">
+  ${generateDonutSVG()}
+  ${generateRadarSVG()}
+  ${generateBarSVG()}
+</div>`
+  };
+
+  const inner = templates[type] || `<p contenteditable="true">New ${type} section — click to edit</p>`;
+  return wrapStart + overlays + inner + wrapEnd;
+}
+
+// ============================================================
+//  SVG CHARTS
+// ============================================================
+function generateDonutSVG() {
+  return `<div style="text-align:center">
+  <svg viewBox="0 0 120 120" width="140" height="140" class="chart-svg">
+    <defs>
+      <filter id="glow-d"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"/>
+    <circle cx="60" cy="60" r="48" fill="none" stroke="#00f5ff" stroke-width="12" stroke-dasharray="181 301" stroke-dashoffset="-75" stroke-linecap="round" filter="url(#glow-d)" style="transition:stroke-dasharray 0.8s ease"/>
+    <circle cx="60" cy="60" r="48" fill="none" stroke="#b400ff" stroke-width="12" stroke-dasharray="90 301" stroke-dashoffset="106" stroke-linecap="round"/>
+    <circle cx="60" cy="60" r="48" fill="none" stroke="#ff006a" stroke-width="12" stroke-dasharray="30 301" stroke-dashoffset="-75" stroke-linecap="round"/>
+    <text x="60" y="56" text-anchor="middle" font-family="Orbitron,monospace" font-size="16" fill="#00f5ff" font-weight="900">60%</text>
+    <text x="60" y="68" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="6" fill="#8890bb" letter-spacing="1">WIN RATE</text>
+  </svg>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:#444a6e;letter-spacing:1px" contenteditable="true">DONUT CHART</div>
+</div>`;
+}
+
+function generateRadarSVG() {
+  const cx=80, cy=80, r=60;
+  const axes = 6;
+  const data = [0.9, 0.7, 0.85, 0.6, 0.95, 0.75];
+  const labels = ['AIM','SPEED','INTEL','TEAM','POWER','SKILL'];
+
+  let gridLines = '';
+  for (let ring=1; ring<=4; ring++) {
+    let pts = [];
+    for (let i=0; i<axes; i++) {
+      const angle = (i/axes)*Math.PI*2 - Math.PI/2;
+      const rr = r*(ring/4);
+      pts.push(`${cx+Math.cos(angle)*rr},${cy+Math.sin(angle)*rr}`);
+    }
+    gridLines += `<polygon points="${pts.join(' ')}" fill="none" stroke="rgba(0,245,255,0.08)" stroke-width="1"/>`;
+  }
+
+  let axisLines = '';
+  for (let i=0; i<axes; i++) {
+    const angle = (i/axes)*Math.PI*2 - Math.PI/2;
+    axisLines += `<line x1="${cx}" y1="${cy}" x2="${cx+Math.cos(angle)*r}" y2="${cy+Math.sin(angle)*r}" stroke="rgba(0,245,255,0.1)" stroke-width="1"/>`;
+  }
+
+  let dataPts = [];
+  for (let i=0; i<axes; i++) {
+    const angle = (i/axes)*Math.PI*2 - Math.PI/2;
+    dataPts.push(`${cx+Math.cos(angle)*r*data[i]},${cy+Math.sin(angle)*r*data[i]}`);
+  }
+
+  let labelEls = '';
+  for (let i=0; i<axes; i++) {
+    const angle = (i/axes)*Math.PI*2 - Math.PI/2;
+    const lx = cx+Math.cos(angle)*(r+14);
+    const ly = cy+Math.sin(angle)*(r+14);
+    labelEls += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-family="Share Tech Mono,monospace" font-size="7" fill="#8890bb" letter-spacing="0.5">${labels[i]}</text>`;
+  }
+
+  return `<div style="text-align:center">
+  <svg viewBox="0 0 160 160" width="160" height="160" class="chart-svg">
+    <defs><filter id="glow-r"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+    ${gridLines}${axisLines}
+    <polygon points="${dataPts.join(' ')}" fill="rgba(0,245,255,0.12)" stroke="#00f5ff" stroke-width="1.5" filter="url(#glow-r)"/>
+    ${dataPts.map(p=>`<circle cx="${p.split(',')[0]}" cy="${p.split(',')[1]}" r="3" fill="#00f5ff" filter="url(#glow-r)"/>`).join('')}
+    ${labelEls}
+  </svg>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:#444a6e;letter-spacing:1px" contenteditable="true">RADAR CHART</div>
+</div>`;
+}
+
+function generateBarSVG() {
+  const bars = [{v:85,l:'MON'},{v:62,l:'TUE'},{v:90,l:'WED'},{v:44,l:'THU'},{v:78,l:'FRI'},{v:95,l:'SAT'},{v:70,l:'SUN'}];
+  const colors = ['#00f5ff','#b400ff','#00f5ff','#ff006a','#00f5ff','#ffd700','#00f5ff'];
+  let barEls = '';
+  bars.forEach((b,i) => {
+    const x = 14 + i*18;
+    const h = b.v * 0.65;
+    barEls += `<rect x="${x}" y="${70-h}" width="10" height="${h}" rx="2" fill="${colors[i]}" opacity="0.85" style="filter:drop-shadow(0 0 3px ${colors[i]})"/>
+    <text x="${x+5}" y="80" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="5" fill="#444a6e">${b.l}</text>`;
+  });
+  return `<div style="text-align:center">
+  <svg viewBox="0 0 140 90" width="150" height="100" class="chart-svg">
+    <line x1="10" y1="5" x2="10" y2="72" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <line x1="10" y1="72" x2="135" y2="72" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    ${barEls}
+  </svg>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:#444a6e;letter-spacing:1px" contenteditable="true">BAR CHART</div>
+</div>`;
+}
+
+function generateLineSVG() {
+  const points = [[10,60],[25,45],[40,52],[55,30],[70,38],[85,20],[100,28],[115,15]];
+  const pts = points.map(p=>p.join(',')).join(' ');
+  const area = `${points[0][0]},72 ` + pts + ` ${points[points.length-1][0]},72`;
+  return `<svg viewBox="0 0 130 80" width="180" height="100">
+    <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00f5ff" stop-opacity="0.3"/><stop offset="100%" stop-color="#00f5ff" stop-opacity="0"/></linearGradient></defs>
+    <polygon points="${area}" fill="url(#lg)"/>
+    <polyline points="${pts}" fill="none" stroke="#00f5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 4px #00f5ff)"/>
+    ${points.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="2.5" fill="#00f5ff" style="filter:drop-shadow(0 0 3px #00f5ff)"/>`).join('')}
+  </svg>`;
+}
+
+function generatePieSVG() {
+  const data = [{v:40,c:'#00f5ff'},{v:25,c:'#b400ff'},{v:20,c:'#ff006a'},{v:15,c:'#ffd700'}];
+  let start = -Math.PI/2, els = '';
+  data.forEach(d => {
+    const sweep = (d.v/100)*Math.PI*2;
+    const x1 = 50+40*Math.cos(start), y1 = 50+40*Math.sin(start);
+    const x2 = 50+40*Math.cos(start+sweep), y2 = 50+40*Math.sin(start+sweep);
+    const lg = sweep > Math.PI ? 1 : 0;
+    els += `<path d="M50,50 L${x1},${y1} A40,40 0 ${lg} 1 ${x2},${y2} Z" fill="${d.c}" opacity="0.85" style="filter:drop-shadow(0 0 4px ${d.c})"/>`;
+    start += sweep;
+  });
+  return `<svg viewBox="0 0 100 100" width="120" height="120">${els}</svg>`;
+}
+
+function generateProgressRingSVG() {
+  return `<svg viewBox="0 0 80 80" width="100" height="100">
+    <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"/>
+    <circle cx="40" cy="40" r="32" fill="none" stroke="#00f5ff" stroke-width="8" stroke-dasharray="150 201" stroke-dashoffset="-50" stroke-linecap="round" style="filter:drop-shadow(0 0 6px #00f5ff)"/>
+    <text x="40" y="44" text-anchor="middle" font-family="Orbitron,monospace" font-size="12" fill="#00f5ff" font-weight="900">75%</text>
+  </svg>`;
+}
+
+function insertChart(type) {
+  const chartSection = sections.find(s => s.type === 'chart');
+  if (!chartSection) {
+    addSection('chart');
+    return;
+  }
+  showToast(`Chart added to chart section`);
+}
+
+function updateCharts() {
+  // Color update would go here in a more complex implementation
+  showToast('Chart colors updated');
+}
+
+// ============================================================
+//  SECTION MANAGEMENT
+// ============================================================
+function addSection(type) {
+  pushUndo();
+  const id = ++sectionCounter;
+  sections.push({ id, type, html: '' });
+  const canvas = document.getElementById('preview-canvas');
+  const div = document.createElement('div');
+  div.innerHTML = generateSectionHTML(type, id);
+  canvas.appendChild(div.firstChild);
+  updateSectionTree();
+  generateCode();
+  showToast(`${type.toUpperCase()} section added`);
+}
+
+function deleteSection(sid) {
+  pushUndo();
+  const el = document.getElementById(sid);
+  if (el) el.remove();
+  sections = sections.filter(s => `sec-${s.id}` !== sid);
+  updateSectionTree();
+  generateCode();
+}
+
+function cloneSection(sid) {
+  pushUndo();
+  const el = document.getElementById(sid);
+  if (!el) return;
+  const id = ++sectionCounter;
+  const clone = el.cloneNode(true);
+  clone.id = `sec-${id}`;
+  const type = el.dataset.type;
+  sections.push({ id, type });
+  el.parentNode.insertBefore(clone, el.nextSibling);
+  // Re-attach overlay buttons
+  clone.querySelector('[onclick*="deleteSection"]').onclick = () => deleteSection(`sec-${id}`);
+  clone.querySelector('[onclick*="cloneSection"]').onclick = () => cloneSection(`sec-${id}`);
+  clone.querySelector('[onclick*="moveSection"]').onclick = () => moveSection(`sec-${id}`, -1);
+  updateSectionTree();
+  generateCode();
+  showToast('Section cloned');
+}
+
+function moveSection(sid, dir) {
+  pushUndo();
+  const el = document.getElementById(sid);
+  if (!el) return;
+  if (dir === -1 && el.previousElementSibling) {
+    el.parentNode.insertBefore(el, el.previousElementSibling);
+  } else if (dir === 1 && el.nextElementSibling) {
+    el.parentNode.insertBefore(el.nextElementSibling, el);
+  }
+  updateSectionTree();
+  generateCode();
+}
+
+function selectSection(sid) {
+  document.querySelectorAll('.preview-section').forEach(s => s.classList.remove('selected'));
+  const el = document.getElementById(sid);
+  if (el) el.classList.add('selected');
+}
+
+function updateSectionTree() {
+  const tree = document.getElementById('section-tree');
+  const allSections = document.querySelectorAll('.preview-section');
+  tree.innerHTML = '';
+  allSections.forEach((sec, i) => {
+    const type = sec.dataset.type || 'section';
+    const div = document.createElement('div');
+    div.className = 'tree-item';
+    div.innerHTML = `<div class="ti-dot"></div>${(i+1).toString().padStart(2,'0')} ${type.toUpperCase()}
+      <div class="ti-actions">
+        <div class="ti-action" onclick="event.stopPropagation();moveSection('${sec.id}',-1)" title="Up">↑</div>
+        <div class="ti-action" onclick="event.stopPropagation();moveSection('${sec.id}',1)" title="Down">↓</div>
+        <div class="ti-action del" onclick="event.stopPropagation();deleteSection('${sec.id}')" title="Delete">✕</div>
+      </div>`;
+    div.onclick = () => {
+      tree.querySelectorAll('.tree-item').forEach(t => t.classList.remove('active'));
+      div.classList.add('active');
+      selectSection(sec.id);
+      sec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     };
+    tree.appendChild(div);
+  });
+}
 
-    let layout = [];
+function renderAllSections() {
+  const canvas = document.getElementById('preview-canvas');
+  canvas.innerHTML = '';
+  sections.forEach(s => {
+    const div = document.createElement('div');
+    div.innerHTML = generateSectionHTML(s.type, s.id);
+    canvas.appendChild(div.firstChild);
+  });
+  updateSectionTree();
+}
 
-    function addComponent() {
-        const type = document.getElementById('comp-picker').value;
-        const id = 'c-' + Math.random().toString(36).substr(2, 9);
-        layout.push({ id, type, params: {...comps[type].params} });
-        render();
-    }
+// ============================================================
+//  PREVIEW SIZE
+// ============================================================
+function setPreviewSize(size, btn) {
+  document.querySelectorAll('.preview-size-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const canvas = document.getElementById('preview-canvas');
+  canvas.classList.remove('mobile','tablet');
+  if (size === 'mobile') canvas.classList.add('mobile');
+  if (size === 'tablet') canvas.classList.add('tablet');
+}
 
-    function removeComponent(id) {
-        layout = layout.filter(item => item.id !== id);
-        render();
-    }
+let zoomLevel = 1;
+function zoom(delta) {
+  zoomLevel = Math.max(0.3, Math.min(2, zoomLevel + delta));
+  document.getElementById('preview-canvas').style.transform = `scale(${zoomLevel})`;
+  document.getElementById('preview-canvas').style.transformOrigin = 'top center';
+  const pct = Math.round(zoomLevel*100)+'%';
+  document.getElementById('zoom-label').textContent = pct;
+  document.getElementById('zoom-display').textContent = 'ZOOM: '+pct;
+}
 
-    function updateParam(id, key, val) {
-        const item = layout.find(i => i.id === id);
-        item.params[key] = val;
-        render();
-    }
+// ============================================================
+//  CODE GENERATION
+// ============================================================
+function generateCode() {
+  const canvas = document.getElementById('preview-canvas');
+  const allSections = canvas.querySelectorAll('.preview-section');
 
-    function switchTab(id) {
-        document.querySelectorAll('.tab-pane').forEach(t => t.style.display = 'none');
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('tab-' + id).style.display = 'block';
-        event.target.classList.add('active');
-    }
+  let htmlOut = '';
+  allSections.forEach(sec => {
+    const clone = sec.cloneNode(true);
+    // Remove overlay controls
+    clone.querySelectorAll('.section-overlay,.drag-handle').forEach(el => el.remove());
+    // Remove contenteditable attrs
+    clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    clone.removeAttribute('id');
+    clone.classList.remove('selected');
+    htmlOut += clone.outerHTML + '\n';
+  });
 
-    function render() {
-        const frame = document.getElementById('device-frame');
-        const tree = document.getElementById('layout-tree');
-        
-        frame.innerHTML = layout.map(item => comps[item.type].html(item.id, item.params)).join('');
-        
-        tree.innerHTML = layout.map((item) => `
-            <div class="layout-item">
-                <div class="item-header" onclick="this.nextElementSibling.classList.toggle('open')">
-                    ${comps[item.type].name}
-                    <button class="btn-danger" onclick="removeComponent('${item.id}')">DEL</button>
-                </div>
-                <div class="item-controls">
-                    ${Object.keys(item.params).map(key => `
-                        <div class="control-row">
-                            <label>${key}</label>
-                            <input type="${typeof item.params[key] === 'number' ? 'number' : 'text'}" 
-                                   value="${item.params[key]}" 
-                                   oninput="updateParam('${item.id}', '${key}', this.value)">
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `).join('');
-    }
+  // Build CSS
+  const bgColor = document.getElementById('bgColor').value;
+  const accent = document.getElementById('colAccent').value;
+  const secondary = document.getElementById('colSecondary').value;
+  const textPrimary = document.getElementById('colTextPrimary').value;
+  const textMuted = document.getElementById('colTextMuted').value;
+  const cardBg = document.getElementById('colCard').value;
+  const borderCol = document.getElementById('colBorder').value;
 
-    function updateGlobal() {
-        const accent = document.getElementById('global-accent').value;
-        const grad = document.getElementById('global-grad').value;
-        const frame = document.getElementById('device-frame');
-        
-        frame.style.background = grad || '#000';
-        document.documentElement.style.setProperty('--accent', accent);
-        document.documentElement.style.setProperty('--accent-glow', accent + '66');
-    }
+  const cssOut = `<style>
+/* ── CLANK.WORLD LAYOUT ─── Generated by CSS Studio */
+:root {
+  --accent: ${accent};
+  --secondary: ${secondary};
+  --text-primary: ${textPrimary};
+  --text-muted: ${textMuted};
+  --card-bg: ${cardBg};
+  --border: ${borderCol};
+  --bg: ${bgColor};
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text-primary)}
 
-    function exportCode() {
-        const frame = document.getElementById('device-frame');
-        const cleanHtml = frame.innerHTML.replace(/contenteditable="true"/g, '');
-        const style = `<style>:root{--accent:${document.getElementById('global-accent').value};} body{background:#000; color:#fff; margin:0;} @keyframes marquee {0%{transform:translateX(100%);} 100%{transform:translateX(-100%);}}</style>`;
-        
-        navigator.clipboard.writeText(style + cleanHtml);
-        alert("Full Clank-ready code copied!");
-    }
+/* KEYFRAMES */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes pulse-glow{0%,100%{opacity:1}50%{opacity:0.6}}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes neon-flicker{0%,100%{opacity:1}3%,5%{opacity:0.3}4%{opacity:1}}
 
-    // Init
-    addComponent(); // Start with one
+/* NAVBAR */
+.header{display:flex;align-items:center;padding:16px 32px;gap:24px;background:rgba(5,7,16,0.9);border-bottom:1px solid rgba(0,245,255,0.1);backdrop-filter:blur(20px)}
+.ps-nav-logo{font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:var(--accent);letter-spacing:2px;margin-right:auto}
+.ps-nav-link{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase}
+
+/* HERO */
+.ps-hero{text-align:center;padding:80px 32px;position:relative;overflow:hidden}
+.ps-hero-eyebrow{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;opacity:0.8}
+.ps-hero-title{font-family:'Orbitron',monospace;font-size:clamp(28px,5vw,56px);font-weight:900;line-height:1.1;margin-bottom:20px;background:linear-gradient(135deg,${textPrimary},${accent},${secondary});-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ps-hero-sub{font-size:14px;color:var(--text-muted);max-width:500px;margin:0 auto 32px;line-height:1.7}
+.ps-hero-cta{display:inline-flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.ps-btn{font-family:'Orbitron',monospace;font-size:10px;padding:12px 28px;border-radius:4px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;border:none;transition:all 0.3s;font-weight:700}
+.ps-btn-primary{background:linear-gradient(135deg,${accent},${secondary});color:#050710;box-shadow:0 0 20px rgba(0,245,255,0.3)}
+.ps-btn-primary:hover{box-shadow:0 0 40px rgba(0,245,255,0.6);transform:translateY(-2px)}
+.ps-btn-outline{background:transparent;color:var(--accent);border:1px solid rgba(0,245,255,0.4)}
+.ps-btn-outline:hover{background:rgba(0,245,255,0.1);border-color:var(--accent)}
+
+/* CARDS */
+.ps-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.ps-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:24px;transition:all 0.3s;position:relative;overflow:hidden}
+.ps-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,245,255,0.04),transparent);pointer-events:none}
+.ps-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.4),0 0 20px rgba(0,245,255,0.1);border-color:rgba(0,245,255,0.3)}
+.ps-card-icon{font-size:28px;margin-bottom:12px}
+.ps-card-title{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:8px;letter-spacing:1px}
+.ps-card-desc{font-size:12px;color:var(--text-muted);line-height:1.6}
+
+/* GLASS */
+.ps-glass-card{background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:28px}
+
+/* STATS */
+.ps-stats-row{display:flex;flex-wrap:wrap;gap:16px;justify-content:center}
+.ps-stat-item{text-align:center;flex:1;min-width:100px}
+.ps-stat-val{font-family:'Orbitron',monospace;font-size:32px;font-weight:900;color:var(--accent);text-shadow:0 0 20px rgba(0,245,255,0.5);display:block}
+.ps-stat-label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;margin-top:4px}
+
+/* LEADERBOARD */
+.ps-lb-row{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(0,245,255,0.06);gap:12px;transition:background 0.15s}
+.ps-lb-row:hover{background:rgba(0,245,255,0.04)}
+.ps-lb-rank{font-family:'Orbitron',monospace;font-size:11px;color:#444a6e;width:24px;text-align:center}
+.ps-lb-rank.top{color:#ffd700;text-shadow:0 0 10px rgba(255,215,0,0.5)}
+.ps-lb-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--secondary));display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:10px;color:#050710;font-weight:900;flex-shrink:0}
+.ps-lb-name{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-primary);flex:1}
+.ps-lb-score{font-family:'Orbitron',monospace;font-size:11px;color:var(--accent)}
+
+/* MARQUEE */
+.ps-marquee-wrap{overflow:hidden;border-top:1px solid rgba(0,245,255,0.08);border-bottom:1px solid rgba(0,245,255,0.08);padding:10px 0}
+.ps-marquee-track{display:flex;gap:32px;animation:marquee 20s linear infinite;white-space:nowrap}
+.ps-marquee-item{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:#444a6e;text-transform:uppercase;padding:0 16px;display:flex;align-items:center;gap:8px}
+.ps-marquee-item::before{content:'◆';color:var(--accent);font-size:6px}
+
+/* PROGRESS */
+.ps-progress-wrap{margin-bottom:10px}
+.ps-progress-label{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-muted);margin-bottom:4px}
+.ps-progress-track{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden}
+.ps-progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--secondary));box-shadow:0 0 8px rgba(0,245,255,0.4);transition:width 0.8s cubic-bezier(0.4,0,0.2,1)}
+
+/* FOOTER */
+.footer{padding:40px 32px;border-top:1px solid rgba(0,245,255,0.08);display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between}
+.ps-footer-logo{font-family:'Orbitron',monospace;font-size:12px;font-weight:900;color:var(--accent);letter-spacing:2px}
+.ps-footer-links{display:flex;gap:16px}
+.ps-footer-link{font-family:'Share Tech Mono',monospace;font-size:9px;color:#444a6e;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:color 0.2s}
+.ps-footer-link:hover{color:var(--accent)}
+.ps-footer-copy{font-family:'Share Tech Mono',monospace;font-size:9px;color:#444a6e;letter-spacing:0.5px}
+
+/* SPLIT */
+.ps-split{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center}
+.ps-section-title{font-family:'Orbitron',monospace;font-size:clamp(18px,3vw,28px);font-weight:700;color:var(--text-primary);margin-bottom:8px;letter-spacing:1px}
+.ps-section-sub{font-size:13px;color:var(--text-muted);margin-bottom:28px;line-height:1.6}
+.ps-banner{background:linear-gradient(90deg,rgba(0,245,255,0.1),rgba(180,0,255,0.1),rgba(0,245,255,0.1));border:1px solid rgba(0,245,255,0.2);padding:10px 20px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-primary);letter-spacing:1px}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .ps-split{grid-template-columns:1fr}
+  .ps-feature-grid{grid-template-columns:1fr}
+  .ps-sidebar-layout{grid-template-columns:1fr}
+  .ps-navbar{flex-wrap:wrap;gap:12px}
+  .ps-hero{padding:60px 20px}
+}
+</style>`;
+
+const fullOut = `${cssOut}\n<!-- CLANK.WORLD LAYOUT -->\n${htmlOut}`;
+
+document.getElementById(‘rcode-html’).textContent = htmlOut;
+document.getElementById(‘rcode-css’).textContent = cssOut;
+document.getElementById(‘rcode-full’).textContent = fullOut;
+}
+
+// ============================================================
+//  COPY CODE
+// ============================================================
+function copyCode(type) {
+const ta = document.getElementById(‘rcode-’+type);
+navigator.clipboard.writeText(ta.textContent).then(() => {
+const btn = document.getElementById(`copy-${type}-btn`);
+btn.classList.add(‘success’);
+setTimeout(() => btn.classList.remove(‘success’), 2000);
+showToast(‘Copied to clipboard!’);
+});
+}
+
+// ============================================================
+//  TEMPLATES
+// ============================================================
+function loadTemplate(name) {
+pushUndo();
+const canvas = document.getElementById(‘preview-canvas’);
+canvas.innerHTML = ‘’;
+sections = [];
+sectionCounter = 0;
+
+const templates = {
+cyberpunk: [‘navbar’,‘banner’,‘hero’,‘stats’,‘features’,‘footer’],
+gaming: [‘navbar’,‘hero’,‘profile’,‘progress’,‘leaderboard’,‘footer’],
+landing: [‘navbar’,‘hero’,‘marquee’,‘cards’,‘split’,‘stats’,‘footer’],
+stats: [‘navbar’,‘stats’,‘progress’,‘chart’,‘leaderboard’,‘footer’],
+glass: [‘hero’,‘glass’,‘stats’,‘footer’],
+leaderboard: [‘navbar’,‘banner’,‘leaderboard’,‘stats’,‘footer’],
+hero: [‘banner’,‘hero’,‘marquee’,‘footer’],
+profile: [‘navbar’,‘profile’,‘progress’,‘leaderboard’,‘footer’],
+terminal: [‘navbar’,‘banner’,‘sidebar’,‘progress’,‘footer’]
+};
+
+const colorThemes = {
+cyberpunk: { bg:’#020408’, accent:’#00ff9d’, secondary:’#ff0055’ },
+gaming: { bg:’#070010’, accent:’#b400ff’, secondary:’#ff006a’ },
+landing: { bg:’#050a14’, accent:’#00f5ff’, secondary:’#b400ff’ },
+stats: { bg:’#060810’, accent:’#ffd700’, secondary:’#ff006a’ },
+glass: { bg:’#101828’, accent:’#60a5fa’, secondary:’#a78bfa’ },
+leaderboard: { bg:’#040a0a’, accent:’#00ff88’, secondary:’#ffd700’ },
+hero: { bg:’#08050f’, accent:’#c084fc’, secondary:’#f472b6’ },
+profile: { bg:’#050710’, accent:’#00f5ff’, secondary:’#b400ff’ },
+terminal: { bg:’#001800’, accent:’#00ff41’, secondary:’#00aa00’ }
+};
+
+const theme = colorThemes[name] || colorThemes.landing;
+
+// Apply theme colors
+document.getElementById(‘bgColor’).value = theme.bg;
+document.getElementById(‘colAccent’).value = theme.accent;
+document.getElementById(‘colSecondary’).value = theme.secondary;
+document.getElementById(‘preview-canvas’).style.backgroundColor = theme.bg;
+
+(templates[name]||[‘navbar’,‘hero’,‘cards’,‘footer’]).forEach(type => {
+const id = ++sectionCounter;
+sections.push({ id, type });
+const div = document.createElement(‘div’);
+div.innerHTML = generateSectionHTML(type, id);
+canvas.appendChild(div.firstChild);
+});
+
+updateSectionTree();
+applyColors();
+generateCode();
+showToast(`Template "${name.toUpperCase()}" loaded!`);
+}
+
+// ============================================================
+//  PRESET SAVE/LOAD
+// ============================================================
+function savePreset() {
+const data = {
+sections: sections,
+sectionCounter,
+bgColor: document.getElementById(‘bgColor’).value,
+accent: document.getElementById(‘colAccent’).value,
+secondary: document.getElementById(‘colSecondary’).value,
+htmlSnapshot: document.getElementById(‘preview-canvas’).innerHTML
+};
+localStorage.setItem(‘clankworld_preset’, JSON.stringify(data));
+showToast(‘Preset saved!’);
+}
+
+function loadPreset() {
+const raw = localStorage.getItem(‘clankworld_preset’);
+if (!raw) { showToast(‘No saved preset found’); return; }
+const data = JSON.parse(raw);
+sections = data.sections || [];
+sectionCounter = data.sectionCounter || 0;
+document.getElementById(‘preview-canvas’).innerHTML = data.htmlSnapshot || ‘’;
+document.getElementById(‘bgColor’).value = data.bgColor||’#080b1a’;
+document.getElementById(‘colAccent’).value = data.accent||’#00f5ff’;
+document.getElementById(‘colSecondary’).value = data.secondary||’#b400ff’;
+updateSectionTree();
+generateCode();
+showToast(‘Preset loaded!’);
+}
+
+// ============================================================
+//  RESET
+// ============================================================
+function resetLayout() {
+if (!confirm(‘Reset the entire layout?’)) return;
+pushUndo();
+sections = [];
+sectionCounter = 0;
+document.getElementById(‘preview-canvas’).innerHTML = ‘’;
+updateSectionTree();
+generateCode();
+showToast(‘Layout reset’);
+}
+
+// ============================================================
+//  THEME TOGGLE
+// ============================================================
+let lightMode = false;
+function toggleTheme() {
+lightMode = !lightMode;
+const btn = document.getElementById(‘theme-btn’);
+if (lightMode) {
+document.documentElement.style.setProperty(’–bg-deep’,’#f0f4f8’);
+document.documentElement.style.setProperty(’–bg-mid’,’#e8eef5’);
+document.documentElement.style.setProperty(’–bg-panel’,’#dde6f0’);
+document.documentElement.style.setProperty(’–bg-card’,’#f5f8fc’);
+document.documentElement.style.setProperty(’–text-primary’,’#0d1020’);
+document.documentElement.style.setProperty(’–text-secondary’,’#3a4060’);
+btn.textContent = ‘🌙 DARK’;
+} else {
+document.documentElement.style.setProperty(’–bg-deep’,’#050710’);
+document.documentElement.style.setProperty(’–bg-mid’,’#0a0d1a’);
+document.documentElement.style.setProperty(’–bg-panel’,’#0d1020’);
+document.documentElement.style.setProperty(’–bg-card’,’#111428’);
+document.documentElement.style.setProperty(’–text-primary’,’#e8eeff’);
+document.documentElement.style.setProperty(’–text-secondary’,’#8890bb’);
+btn.textContent = ‘☀ LIGHT’;
+}
+}
+
+// ============================================================
+//  DRAG AND DROP (sections reordering)
+// ============================================================
+let dragEl = null;
+document.addEventListener(‘mousedown’, e => {
+const handle = e.target.closest(’.drag-handle’);
+if (!handle) return;
+dragEl = handle.closest(’.preview-section’);
+dragEl.style.opacity = ‘0.5’;
+e.preventDefault();
+});
+
+document.addEventListener(‘mousemove’, e => {
+if (!dragEl) return;
+const canvas = document.getElementById(‘preview-canvas’);
+const els = […canvas.querySelectorAll(’.preview-section’)].filter(el => el !== dragEl);
+const mouseY = e.clientY;
+let inserted = false;
+for (const el of els) {
+const rect = el.getBoundingClientRect();
+if (mouseY < rect.top + rect.height/2) {
+canvas.insertBefore(dragEl, el);
+inserted = true;
+break;
+}
+}
+if (!inserted) canvas.appendChild(dragEl);
+});
+
+document.addEventListener(‘mouseup’, () => {
+if (dragEl) {
+dragEl.style.opacity = ‘’;
+dragEl = null;
+updateSectionTree();
+generateCode();
+}
+});
+
+// ============================================================
+//  INIT
+// ============================================================
+(function init() {
+// Load default template
+loadTemplate(‘landing’);
+
+// Set gradient preview
+updateGradient();
+
+// Apply hover effects default
+applyHoverEffects();
+
+// Initial code generate
+setTimeout(generateCode, 100);
+})();
 </script>
+
 </body>
 </html>
