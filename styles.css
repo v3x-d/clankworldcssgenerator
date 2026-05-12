@@ -1,7 +1,14 @@
 /* =========================================================
    CLANK.WORLD DESIGN SYSTEM CORE
    ========================================================= */
+body {
+  font-family: "Exo 2", system-ui, -apple-system, Arial, sans-serif !important;
+}
 
+.ps-hero-title,
+.ps-nav-logo {
+  font-family: "Orbitron", system-ui, sans-serif !important;
+}
 :root {
   /* BASE */
   --bg: #050710;
