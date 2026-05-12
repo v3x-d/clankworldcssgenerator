@@ -1,382 +1,330 @@
-/* =========================================================
-   CLANK.WORLD STYLE.CSS V5 — FULL ENGINE BUILD
-   FIXED + MERGED + STABLE
-========================================================= */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>UI Builder V5</title>
 
-/* -------------------------
-   ROOT TOKENS
-------------------------- */
-:root {
-  --bg-deep: #050710;
-  --bg-mid: #0a0d1a;
-  --bg-panel: #0d1020;
-  --bg-card: #111428;
-  --bg-hover: #161932;
+<style id="STYLE-CSS-V5">
+/* ============================================================
+   STYLE.CSS V5 - CLEAN CORE LAYOUT
+   ============================================================ */
 
-  --accent-cyan: #00f5ff;
-  --accent-purple: #b400ff;
-  --accent-pink: #ff006a;
-  --accent-gold: #ffd700;
-  --accent-green: #00ff88;
-
-  --border-dim: rgba(0,245,255,0.12);
-  --border-glow: rgba(0,245,255,0.4);
-
-  --text-primary: #e8eeff;
-  --text-secondary: #8890bb;
-  --text-dim: #444a6e;
-
-  --font-display: "Orbitron", monospace;
-  --font-mono: "Share Tech Mono", monospace;
-  --font-body: "Exo 2", sans-serif;
-
-  --glow-cyan: 0 0 20px rgba(0,245,255,0.4), 0 0 60px rgba(0,245,255,0.15);
-  --glow-purple: 0 0 20px rgba(180,0,255,0.4), 0 0 60px rgba(180,0,255,0.15);
-
-  --sidebar-w: 300px;
-  --rightbar-w: 320px;
-  --topbar-h: 52px;
+:root{
+  --bg:#080b1a;
+  --overlay:#050710;
+  --text:#e8eeff;
+  --muted:#8890bb;
+  --accent:#00f5ff;
+  --secondary:#b400ff;
+  --card:#111428;
+  --border:#1a1e38;
 }
 
-/* -------------------------
-   GLOBAL RESET
-------------------------- */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* RESET */
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:system-ui, sans-serif;
 }
 
-body {
-  font-family: var(--font-body);
-  background: var(--bg-deep);
-  color: var(--text-primary);
-  height: 100vh;
-  overflow: hidden;
+body{
+  background:var(--bg);
+  color:var(--text);
+  overflow:hidden;
 }
 
-/* -------------------------
-   SCROLLBAR
-------------------------- */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* MAIN LAYOUT */
+#main-layout{
+  display:flex;
+  width:100vw;
+  height:100vh;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--bg-deep);
+/* LEFT PANEL */
+#left-sidebar{
+  width:320px;
+  background:rgba(10,12,25,0.95);
+  border-right:1px solid var(--border);
+  overflow-y:auto;
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--accent-cyan);
-  border-radius: 3px;
+/* CENTER */
+#center-panel{
+  flex:1;
+  display:flex;
+  flex-direction:column;
 }
 
-/* =========================================================
-   MAIN LAYOUT
-========================================================= */
-#main-layout {
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
+/* RIGHT PANEL */
+#right-panel{
+  width:320px;
+  background:rgba(10,12,25,0.95);
+  border-left:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
 }
 
-/* =========================================================
-   LEFT SIDEBAR
-========================================================= */
-#left-sidebar {
-  width: var(--sidebar-w);
-  background: var(--bg-panel);
-  border-right: 1px solid var(--border-dim);
-  display: flex;
-  flex-direction: column;
+/* TABS */
+.sidebar-tab-bar{
+  display:flex;
+  border-bottom:1px solid var(--border);
 }
 
-/* tabs */
-.sidebar-tab-bar {
-  display: flex;
-  border-bottom: 1px solid var(--border-dim);
+.stab{
+  flex:1;
+  text-align:center;
+  padding:10px;
+  cursor:pointer;
+  font-size:12px;
+  color:var(--muted);
 }
 
-.stab {
-  flex: 1;
-  padding: 10px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  text-align: center;
-  cursor: pointer;
-  color: var(--text-dim);
-  border-right: 1px solid var(--border-dim);
+.stab.active{
+  color:var(--accent);
+  border-bottom:2px solid var(--accent);
 }
 
-.stab.active {
-  color: var(--accent-cyan);
-  background: rgba(0,245,255,0.06);
+/* GROUPS */
+.ctrl-group{
+  border-bottom:1px solid var(--border);
+  padding:10px;
 }
 
-/* content */
-.sidebar-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 12px;
+.ctrl-group-title{
+  font-size:12px;
+  color:var(--accent);
+  margin-bottom:8px;
+  cursor:pointer;
 }
 
-/* groups */
-.ctrl-group {
-  margin-bottom: 14px;
+.ctrl-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:6px 0;
+  gap:8px;
 }
 
-.ctrl-group-title {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  color: var(--accent-cyan);
-  margin-bottom: 8px;
-  cursor: pointer;
+.ctrl-label{
+  font-size:11px;
+  color:var(--muted);
 }
 
-.ctrl-group-body {}
-
-/* rows */
-.ctrl-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
+.ctrl-value{
+  font-size:11px;
+  color:var(--text);
 }
 
-.ctrl-label {
-  font-size: 9px;
-  color: var(--text-secondary);
+/* INPUTS */
+input, select{
+  width:100%;
+  background:#0d1020;
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:6px;
+  font-size:12px;
 }
 
-.ctrl-value {
-  font-size: 9px;
-  color: var(--accent-cyan);
+/* BUTTONS */
+.ctrl-btn, .copy-btn{
+  background:var(--accent);
+  color:#000;
+  border:none;
+  padding:8px;
+  cursor:pointer;
+  font-weight:600;
 }
 
-/* inputs */
-input, select {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  background: var(--bg-deep);
-  color: var(--text-primary);
-  border: 1px solid var(--border-dim);
-  padding: 4px 6px;
+.ctrl-btn.primary{
+  background:var(--secondary);
+  color:#fff;
 }
 
-/* range */
-input[type="range"] {
-  width: 100%;
+/* TOGGLES */
+.toggle{
+  width:32px;
+  height:18px;
+  border-radius:20px;
+  background:#222;
+  position:relative;
+  cursor:pointer;
 }
 
-/* toggle */
-.toggle {
-  width: 34px;
-  height: 18px;
-  border-radius: 9px;
-  background: var(--bg-deep);
-  border: 1px solid var(--border-dim);
-  position: relative;
-  cursor: pointer;
+.toggle::after{
+  content:"";
+  width:14px;
+  height:14px;
+  background:#fff;
+  position:absolute;
+  top:2px;
+  left:2px;
+  border-radius:50%;
+  transition:0.2s;
 }
 
-.toggle::after {
-  content: "";
-  width: 12px;
-  height: 12px;
-  background: var(--text-dim);
-  border-radius: 50%;
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  transition: 0.2s;
+.toggle.on{
+  background:var(--accent);
 }
 
-.toggle.on::after {
-  left: 18px;
-  background: var(--accent-cyan);
+.toggle.on::after{
+  left:16px;
 }
 
-/* =========================================================
-   CENTER PANEL
-========================================================= */
-#center-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+/* PREVIEW */
+#preview-toolbar{
+  display:flex;
+  gap:10px;
+  padding:10px;
+  border-bottom:1px solid var(--border);
 }
 
-/* toolbar */
-#preview-toolbar {
-  height: var(--topbar-h);
-  display: flex;
-  align-items: center;
-  padding: 0 10px;
-  background: var(--bg-mid);
-  border-bottom: 1px solid var(--border-dim);
+.preview-size-btn{
+  padding:6px 10px;
+  font-size:11px;
+  cursor:pointer;
+  border:1px solid var(--border);
+  color:var(--muted);
 }
 
-.preview-size-btn {
-  font-size: 9px;
-  padding: 4px 8px;
-  border: 1px solid var(--border-dim);
-  cursor: pointer;
-  color: var(--text-dim);
+.preview-size-btn.active{
+  border-color:var(--accent);
+  color:var(--accent);
 }
 
-.preview-size-btn.active {
-  color: var(--accent-cyan);
+#preview-frame{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:auto;
 }
 
-/* frame */
-#preview-frame {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-  background: var(--bg-mid);
+#preview-canvas{
+  width:100%;
+  height:100%;
+  transform-origin:top center;
 }
 
-#preview-canvas {
-  width: 100%;
-  max-width: 1100px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-dim);
-  border-radius: 10px;
+/* RIGHT PANEL TABS */
+.rpanel-tabs{
+  display:flex;
+  border-bottom:1px solid var(--border);
 }
 
-/* =========================================================
-   RIGHT PANEL
-========================================================= */
-#right-panel {
-  width: var(--rightbar-w);
-  background: var(--bg-panel);
-  border-left: 1px solid var(--border-dim);
-  display: flex;
-  flex-direction: column;
+.rtab{
+  flex:1;
+  padding:8px;
+  text-align:center;
+  font-size:12px;
+  cursor:pointer;
+  color:var(--muted);
 }
 
-.rpanel-tabs {
-  display: flex;
-  border-bottom: 1px solid var(--border-dim);
+.rtab.active{
+  color:var(--accent);
+  border-bottom:2px solid var(--accent);
 }
 
-.rtab {
-  flex: 1;
-  text-align: center;
-  font-size: 9px;
-  padding: 10px;
-  cursor: pointer;
-  color: var(--text-dim);
+.rcode-area{
+  flex:1;
+  display:none;
+  padding:10px;
+  font-size:11px;
+  overflow:auto;
 }
 
-.rtab.active {
-  color: var(--accent-cyan);
+.rcode-area.active{
+  display:block;
 }
 
-.rcode-area {
-  flex: 1;
-  overflow: auto;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  padding: 10px;
-  display: none;
-  background: var(--bg-deep);
+/* FOOTER */
+.rpanel-footer{
+  display:flex;
+  gap:5px;
+  padding:8px;
+  border-top:1px solid var(--border);
 }
 
-.rcode-area.active {
-  display: block;
-}
+</style>
+</head>
 
-/* footer */
-.rpanel-footer {
-  display: flex;
-  gap: 6px;
-  padding: 10px;
-  border-top: 1px solid var(--border-dim);
-}
+<body>
 
-.copy-btn {
-  flex: 1;
-  font-size: 9px;
-  padding: 6px;
-  background: transparent;
-  border: 1px solid var(--border-dim);
-  color: var(--text-secondary);
-  cursor: pointer;
-}
+<!-- ============================================================
+MAIN LAYOUT (YOUR ORIGINAL STRUCTURE PRESERVED)
+============================================================ -->
+<div id="main-layout">
 
-.copy-btn:hover {
-  color: var(--accent-cyan);
-  border-color: var(--accent-cyan);
-}
+  <!-- LEFT SIDEBAR -->
+  <div id="left-sidebar">
 
-/* =========================================================
-   BUILDER GRID
-========================================================= */
-.build-section-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-}
+    <div class="sidebar-tab-bar">
+      <div class="stab active" data-stab="style" onclick="switchSTab(this,'style')">STYLE</div>
+      <div class="stab" data-stab="build" onclick="switchSTab(this,'build')">BUILD</div>
+      <div class="stab" data-stab="type" onclick="switchSTab(this,'type')">TYPE</div>
+      <div class="stab" data-stab="anim" onclick="switchSTab(this,'anim')">ANIM</div>
+      <div class="stab" data-stab="chart" onclick="switchSTab(this,'chart')">CHART</div>
+    </div>
 
-.build-item {
-  font-size: 9px;
-  padding: 8px;
-  border: 1px solid var(--border-dim);
-  cursor: pointer;
-  text-align: center;
-  background: var(--bg-deep);
-}
+    <!-- STYLE TAB (kept structure intact, cleaned only syntax issues) -->
+    <div id="stab-style" class="sidebar-content">
 
-.build-item:hover {
-  border-color: var(--accent-cyan);
-  color: var(--accent-cyan);
-}
+      <div class="ctrl-group">
+        <div class="ctrl-group-title">BACKGROUND</div>
 
-/* =========================================================
-   PREVIEW SECTIONS
-========================================================= */
-.preview-section {
-  padding: 40px;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-}
+        <div class="ctrl-row">
+          <span class="ctrl-label">BG Color</span>
+          <input type="color" id="bgColor" value="#080b1a" oninput="updateBg()">
+        </div>
 
-/* HERO BASIC SUPPORT */
-.ps-hero {
-  text-align: center;
-  padding: 60px 20px;
-}
+        <div class="ctrl-row">
+          <input type="url" id="bgImageUrl" placeholder="https://..." oninput="updateBg()">
+        </div>
 
-.ps-hero-title {
-  font-family: var(--font-display);
-  font-size: 48px;
-}
+      </div>
 
-/* CARDS */
-.ps-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-dim);
-  padding: 20px;
-  border-radius: 12px;
-}
+    </div>
 
-.ps-card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
-}
+  </div>
 
-/* =========================================================
-   FIX: ENSURE UI IS NOT WHITE/BLAND
-========================================================= */
-body {
-  background: var(--bg-deep);
-}
+  <!-- CENTER -->
+  <div id="center-panel">
 
-#main-layout,
-#left-sidebar,
-#right-panel,
-#center-panel {
-  background: transparent;
-}
+    <div id="preview-toolbar">
+      <div class="preview-size-btn active" onclick="setPreviewSize('desktop',this)">DESKTOP</div>
+      <div class="preview-size-btn" onclick="setPreviewSize('tablet',this)">TABLET</div>
+      <div class="preview-size-btn" onclick="setPreviewSize('mobile',this)">MOBILE</div>
+    </div>
+
+    <div id="preview-frame">
+      <div id="preview-canvas"></div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT -->
+  <div id="right-panel">
+
+    <div class="rpanel-tabs">
+      <div class="rtab active" onclick="switchRTab(this,'html')">HTML</div>
+      <div class="rtab" onclick="switchRTab(this,'css')">CSS</div>
+      <div class="rtab" onclick="switchRTab(this,'full')">FULL</div>
+    </div>
+
+    <div id="rcode-html" class="rcode-area active"></div>
+    <div id="rcode-css" class="rcode-area"></div>
+    <div id="rcode-full" class="rcode-area"></div>
+
+    <div class="rpanel-footer">
+      <button class="copy-btn" onclick="copyCode('html')">COPY HTML</button>
+      <button class="copy-btn" onclick="copyCode('css')">COPY CSS</button>
+      <button class="copy-btn" onclick="copyCode('full')">EXPORT</button>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>
