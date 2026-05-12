@@ -73,23 +73,29 @@ function addSection(type) {
   if (!canvas) return;
 
   const el = document.createElement("div");
-  el.className = "preview-section";
+
+  // FORCE BOTH LAYERS TO MATCH CSS
+  el.className = `preview-section ps-${type}`;
   el.id = `sec-${id}`;
   el.dataset.type = type;
 
+  // SIMPLE VISUAL CONTENT (no dependencies)
   el.innerHTML = `
-    <div style="padding:18px;margin:10px;border:1px solid #444;color:#fff;border-radius:8px">
-      SECTION: ${type}
+    <div class="ps-card">
+      <div style="font-family:Orbitron; font-weight:700;">
+        ${type.toUpperCase()} SECTION
+      </div>
     </div>
   `;
 
   canvas.appendChild(el);
 
   updateSectionTree();
-  requestRender();
+  requestRender?.();
 
   console.log("SECTION ADDED:", type);
-}
+
+};
 
 function deleteSection(sid) {
   pushUndo();
@@ -318,4 +324,11 @@ window.resetLayout = function() {
   }
 
   console.log("layout reset");
+};
+window.generateSectionHTML = window.generateSectionHTML || function(type, id) {
+  return `
+    <div class="preview-section ps-${type}" id="sec-${id}">
+      <div class="ps-card">${type}</div>
+    </div>
+  `;
 };
